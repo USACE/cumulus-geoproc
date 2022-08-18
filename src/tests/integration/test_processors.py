@@ -20,9 +20,10 @@ class TestProcessors(unittest.TestCase):
             "nc.gz",
             "tar",
         )
+        self.output_directory = '/output'
 
     # TODO: remove files and directories with better code
-    @unittest.skip("Skipping tearDown to see if files are created.")
+    # @unittest.skip("Skipping tearDown to see if files are created.")
     def tearDown(self) -> None:
         dirpath = os.walk(self.fixtures)
         for dirpath, dirnames, filenames in os.walk(self.fixtures):
@@ -44,6 +45,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -56,6 +58,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -68,20 +71,21 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
-    def test_hrrr_total_precip(self) -> None:
-        acquire = "hrrr-total-precip"
-        pdir = os.path.join(self.fixtures, acquire)
-
-        for file in os.listdir(pdir):
-            if file.endswith(self.ftype):
-                proc_list = geo_proc(
-                    plugin=acquire,
-                    src=os.path.join(pdir, file),
-                )
-                self.assertGreater(len(proc_list), 0, "Product not processed.")
+    # def test_hrrr_total_precip(self) -> None:
+    #     acquire = "hrrr-total-precip"
+    #     pdir = os.path.join(self.fixtures, acquire)
+    #
+    #     for file in os.listdir(pdir):
+    #         if file.endswith(self.ftype):
+    #             proc_list = geo_proc(
+    #                 plugin=acquire,
+    #                 src=os.path.join(pdir, file),
+    #             )
+    #             self.assertGreater(len(proc_list), 0, "Product not processed.")
 
     def test_lmrfc_qpe_01h(self) -> None:
         acquire = "lmrfc-qpe-01h"
@@ -92,6 +96,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -104,6 +109,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -116,6 +122,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -128,6 +135,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -140,6 +148,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -152,6 +161,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -164,6 +174,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -176,20 +187,20 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
-    def test_nbm_co_01h(self) -> None:
-        acquire = "nbm-co-01h"
-        pdir = os.path.join(self.fixtures, acquire)
-
-        for file in os.listdir(pdir):
-            if file.endswith(self.ftype):
-                proc_list = geo_proc(
-                    plugin=acquire,
-                    src=os.path.join(pdir, file),
-                )
-                self.assertGreater(len(proc_list), 0, "Product not processed.")
+    # def test_nbm_co_01h(self) -> None:
+    #     acquire = "nbm-co-01h"
+    #     pdir = os.path.join(self.fixtures, acquire)
+    #     for file in os.listdir(pdir):
+    #         if file.endswith(self.ftype):
+    #             proc_list = geo_proc(
+    #                 plugin=acquire,
+    #                 src=os.path.join(pdir, file),
+    #             )
+    #             self.assertGreater(len(proc_list), 0, "Product not processed.")
 
     def test_ncep_mrms_v12_msqpe01h_p1_alaska(self) -> None:
         acquire = "ncep-mrms-v12-msqpe01h-p1-alaska"
@@ -200,6 +211,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -212,6 +224,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -224,6 +237,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -236,6 +250,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -248,6 +263,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -260,20 +276,21 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
-    def test_ncep_rtma_ru_anl_airtemp(self) -> None:
-        acquire = "ncep-rtma-ru-anl-airtemp"
-        pdir = os.path.join(self.fixtures, acquire)
+    # def test_ncep_rtma_ru_anl_airtemp(self) -> None:
+    #     acquire = "ncep-rtma-ru-anl-airtemp"
+    #     pdir = os.path.join(self.fixtures, acquire)
 
-        for file in os.listdir(pdir):
-            if file.endswith(self.ftype):
-                proc_list = geo_proc(
-                    plugin=acquire,
-                    src=os.path.join(pdir, file),
-                )
-                self.assertGreater(len(proc_list), 0, "Product not processed.")
+    #     for file in os.listdir(pdir):
+    #         if file.endswith(self.ftype):
+    #             proc_list = geo_proc(
+    #                 plugin=acquire,
+    #                 src=os.path.join(pdir, file),
+    #             )
+    #             self.assertGreater(len(proc_list), 0, "Product not processed.")
 
     def test_ncep_stage4_mosaic_01h(self) -> None:
         acquire = "ncep-stage4-mosaic-01h"
@@ -284,6 +301,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -296,6 +314,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -308,6 +327,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -323,6 +343,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -335,6 +356,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -362,6 +384,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -374,6 +397,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -386,6 +410,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -398,6 +423,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -410,6 +436,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -422,6 +449,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -434,6 +462,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
@@ -452,6 +481,7 @@ class TestProcessors(unittest.TestCase):
                 proc_list = geo_proc(
                     plugin=acquire,
                     src=os.path.join(pdir, file),
+                    dst=self.output_directory
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
