@@ -114,6 +114,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         cgdal.gdal_translate_w_options(
             tif := os.path.join(dst, filename_dst),
             ds,
+            bandList=[band_number]
         )
 
         # validate COG

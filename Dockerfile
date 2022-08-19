@@ -29,18 +29,10 @@ RUN mkdir /output
 # Source Code Directory
 RUN mkdir /src
 COPY src/ /src/
-
-# Test Data
-# TODO: Consider moving this to a location like "/cumulus-geoproc-test-data"
-#       where it can be referenced with a fully-qualified-pathname
-#       and can be cached as a docker build layer above copy of more frequently changing
-#       source code in /src
-COPY cumulus-geoproc-test-data/fixtures/ /src/tests/integration/fixtures/
-
 WORKDIR /src
 
 # Run all tests
 CMD ["python3", "-m", "unittest", "discover", "-v", "tests"]
 
 # Run a single test (helpful for developing new processors)
-# CMD ["python3", "-m", "unittest", "-v", "tests/integration/test_one_thing.py"]
+# CMD ["python3", "-m", "unittest", "-v", "tests/integration/hrrr-total-precip/test_hrrr_total_precip_20220818_f06.py"]

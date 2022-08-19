@@ -12,4 +12,7 @@ while getopts "k" option; do
     esac
 done
 
-docker run ${VOLUMES} cumulus-geoproc-tests:latest
+docker run \
+  ${VOLUMES} \
+  -v $PWD/cumulus-geoproc-test-data/fixtures:/src/tests/integration/fixtures \
+  cumulus-geoproc-tests:latest

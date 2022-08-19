@@ -75,18 +75,6 @@ class TestProcessors(unittest.TestCase):
                 )
                 self.assertGreater(len(proc_list), 0, "Product not processed.")
 
-    # def test_hrrr_total_precip(self) -> None:
-    #     acquire = "hrrr-total-precip"
-    #     pdir = os.path.join(self.fixtures, acquire)
-    #
-    #     for file in os.listdir(pdir):
-    #         if file.endswith(self.ftype):
-    #             proc_list = geo_proc(
-    #                 plugin=acquire,
-    #                 src=os.path.join(pdir, file),
-    #             )
-    #             self.assertGreater(len(proc_list), 0, "Product not processed.")
-
     def test_lmrfc_qpe_01h(self) -> None:
         acquire = "lmrfc-qpe-01h"
         pdir = os.path.join(self.fixtures, acquire)
