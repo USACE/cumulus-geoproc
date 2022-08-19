@@ -42,7 +42,7 @@ class TestHrrrTotalPrecip20220818f01(unittest.TestCase):
         # Get Band using attributes from processor
         attr = {
             "GRIB_ELEMENT": "APCP01",
-            "GRIB_COMMENT": "precipitation",
+            "GRIB_COMMENT": "01 hr Total precipitation",
             "GRIB_UNIT": "[kg/(m^2)]",
         }
         ds = gdal.Open(self.acquirable)
@@ -67,7 +67,7 @@ class TestHrrrTotalPrecip20220818f01(unittest.TestCase):
         ds = gdal.Open(proc_list[0]["file"])
         attr = {
             "GRIB_ELEMENT": "APCP01",
-            "GRIB_COMMENT": "precipitation",
+            "GRIB_COMMENT": "01 hr Total precipitation",
             "GRIB_UNIT": "[kg/(m^2)]",
         }
         band = find_band(ds, attr)
