@@ -55,7 +55,7 @@ class TestHrrrTotalPrecip20220818f00(unittest.TestCase):
         proc_list = geo_proc(
             plugin="hrrr-total-precip", src=self.acquirable, dst=self.output_directory
         )
-        self.assertGreaterEqual(len(proc_list), 1, "Product list NOT empty; band found")
+        self.assertListEqual(proc_list, [], "Product list NOT empty; band found")
 
 
 if __name__ == "__main__":
