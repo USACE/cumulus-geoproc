@@ -66,10 +66,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             "GRIB_UNIT": "[kg/(m^2)]",
         }
 
-        # If file is forecast hour 0, grib element is different (APCP)
-        if ".wrfsfcf00." in filename:
-            attr["GRIB_ELEMENT"] = "APCP"
-
         # Take the source path as the destination unless defined.
         # User defined `dst` not programatically removed unless under
         # source's temporary directory.
