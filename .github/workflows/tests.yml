@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: tests
         with:
           submodules: recursive
-          run: ./tests.sh
+      - name: tests
+        run: ./tests.sh
