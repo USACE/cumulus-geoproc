@@ -57,14 +57,14 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     outfile_list = []
 
     try:
+        filename = os.path.basename(src)
+        filename_dst = utils.file_extension(filename)
+
         attr = {
-            "GRIB_ELEMENT": "APCP",
+            "GRIB_ELEMENT": "APCP01",
             "GRIB_COMMENT": "precipitation",
             "GRIB_UNIT": "[kg/(m^2)]",
         }
-
-        filename = os.path.basename(src)
-        filename_dst = utils.file_extension(filename)
 
         # Take the source path as the destination unless defined.
         # User defined `dst` not programatically removed unless under
@@ -112,9 +112,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
 
         cgdal.gdal_translate_w_options(
-            tif := os.path.join(dst, filename_dst),
-            ds,
-            bandList=[band_number]
+            tif := os.path.join(dst, filename_dst), ds, bandList=[band_number]
         )
 
         # validate COG
