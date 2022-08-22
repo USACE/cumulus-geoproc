@@ -32,6 +32,6 @@ while getopts ":km:th" option; do
 done
 
 docker run \
-  ${VOLUMES} \
+  --rm ${VOLUMES} \
   -v $PWD/cumulus-geoproc-test-data/fixtures:/src/tests/integration/fixtures \
   cumulus-geoproc-tests:latest "$test_method"
