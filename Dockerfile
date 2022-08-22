@@ -8,8 +8,6 @@ RUN apt-get update -y && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Pip Requirements
-#   -- TODO: Probably a cleaner way to do this rather
-#   --       than duplicating setup.cfg's install_requires
 COPY ./requirements*.txt /
 RUN pip3 install -r requirements-dev.txt
 
