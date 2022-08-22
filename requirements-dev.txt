@@ -1,0 +1,8 @@
+# Base requirements
+-r requirements.txt
+# Additional development requirements
+# black
+mkdocs
+# coverage
+pytest
+pytest-html
