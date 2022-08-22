@@ -37,7 +37,7 @@ class TestHrrrTotalPrecip20220818f00:
 
     def test_input_file_exists(self) -> None:
         # self.assertTrue(os.path.isfile(self.acquirable))
-        assert os.path.isfile(self.acquirable) == True, "Input file not found"
+        assert os.path.isfile(self.acquirable), "Input file not found"
 
     def test_find_correct_band(self) -> None:
         # Get Band using attributes from processor
