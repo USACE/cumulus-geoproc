@@ -26,7 +26,6 @@ class TestHrrrTotalPrecip20220818f00:
         os.makedirs(self.output_directory, exist_ok=True)
         # If acquirable not stored in `cumulus-geoproc-test-data`; download it
         if not os.path.isfile(self.acquirable):
-            # @todo; change link below to persistent archive link to acquire file
             urlretrieve(
                 "https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.20220818/conus/hrrr.t00z.wrfsfcf00.grib2",
                 self.acquirable,
@@ -36,7 +35,6 @@ class TestHrrrTotalPrecip20220818f00:
         pass
 
     def test_input_file_exists(self) -> None:
-        # self.assertTrue(os.path.isfile(self.acquirable))
         assert os.path.isfile(self.acquirable), "Input file not found"
 
     def test_find_correct_band(self) -> None:
@@ -48,11 +46,12 @@ class TestHrrrTotalPrecip20220818f00:
         }
         ds = gdal.Open(self.acquirable)
         # No band should be returned for 00 hour file
-        assert find_band(ds, attr) is None, "Band is not None"
+        band = find_band(ds, attr)
+        ds = None
+        assert band is None, "Band is not None"
 
     def test_at_least_one_productfile(self) -> None:
         proc_list = geo_proc(
             plugin="hrrr-total-precip", src=self.acquirable, dst=self.output_directory
         )
-        # self.assertGreater(len(proc_list), 0, "Product not processed.")
         assert len(proc_list) == 0, "Unexpected product was processed."

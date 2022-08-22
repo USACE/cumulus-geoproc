@@ -25,7 +25,6 @@ class TestHrrrTotalPrecip20220818f02:
         os.makedirs(self.output_directory, exist_ok=True)
         # If acquirable not stored in `cumulus-geoproc-test-data`; download it
         if not os.path.isfile(self.acquirable):
-            # @todo; change link below to persistent archive link to acquire file
             urlretrieve(
                 "https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.20220818/conus/hrrr.t00z.wrfsfcf02.grib2",
                 self.acquirable,
@@ -47,7 +46,9 @@ class TestHrrrTotalPrecip20220818f02:
 
         ds = gdal.Open(self.acquirable)
         # Get the band
-        assert find_band(ds, attr) == 90, "Incorrect band number."
+        band = find_band(ds, attr)
+        ds = None
+        assert band == 90, "Incorrect band number."
 
     def test_at_least_one_productfile(self) -> None:
         proc_list = geo_proc(
