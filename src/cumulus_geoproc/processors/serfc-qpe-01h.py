@@ -76,7 +76,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         valid_time_match = time_pattern.match(raster.GetMetadataItem("GRIB_VALID_TIME"))
         dt_valid = datetime.fromtimestamp(int(valid_time_match[0]), timezone.utc)
 
-        cgdal.gdal_translate_w_options()(
+        cgdal.gdal_translate_w_options(
             tif := os.path.join(dst, filename_dst), ds, bandList=[band_number]
         )
 
