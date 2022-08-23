@@ -30,3 +30,6 @@ COPY ./entrypoint.sh /entrypoint.sh
 WORKDIR /src
 
 ENTRYPOINT [ "/entrypoint.sh" ]
+
+# For Testing; Keep Container Running to shell inside
+# ENTRYPOINT [ "/bin/sh", "-c", "while true; do sleep 2 && echo 'sleeping for 2 seconds'; done;" ]

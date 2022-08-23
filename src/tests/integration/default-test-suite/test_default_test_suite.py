@@ -55,22 +55,24 @@ class ProcessorResult:
             return geo_proc(plugin=self.processor, src=self.infile, dst=self.output_directory)
         except:
             return []
-    
+    @property
     def min(self):
         # TODO: Return maximum gridcell value in all grids returned by process() to be used in integration tests
         # Can probably call gdalinfo -stats (or gdal python binding equivalent) to get min,max.
         pass
     
+    @property
     def max(self):
         # TODO: Return minimum gridcell value in all grids returned by process() to be used in integration tests
         # Can probably call gdalinfo -stats (or gdal python binding equivalent) to get min,max.
         pass
 
 
-@pytest.fixture
+# scope="module" results in processing being computed once, reused in subsequent tests
+# see https://docs.pytest.org/en/6.2.x/fixture.html#scope-sharing-fixtures-across-classes-modules-packages-or-session
+@pytest.fixture(scope="module")
 def processed():
     return [ProcessorResult(*entry) for entry in FIXTURE_INFO]
-
 
 
 ###############################################################################################################
@@ -95,19 +97,23 @@ def test_productfile_file_exists_on_disk(processed) -> None:
 
 
 def test_productfile_version_is_none(processed) -> None:
-    # Version should be None
+    # Version should be None, or a version that is not the default version
     for p in processed:
         for r in p.result:
-            assert r["version"] is None, "Version is not None"
+            assert r["version"] is None or not r["version"].startswith("1111-11-11T11:11:11"), """
+            Version explicitly set to default version in database.
+            Recommend setting version = None and letting the database handle this
+            """
 
 
 def test_productfile_filename_has_datetime(processed) -> None:
     for p in processed:
         for r in p.result:
-            match = re.search(r"\d{4}\d{2}\d{2}\d{2}", os.path.basename(r["file"]))
-            assert datetime.strptime(
-                match.group(), "%Y%M%d%H"
-            ), "output filename does not contain valid datetime string"
+            # NOTE: Optional _ for product cnrfc-qpe-06h; source file uses YYYYMMDD_HHHH
+            match = re.search(r"\d{4}\d{2}\d{2}_?\d{2}", os.path.basename(r["file"]))
+            assert match is not None and datetime.strptime(
+                match.group().replace("_", ""), "%Y%M%d%H"
+            ), f"output filename does not contain valid datetime string: {r['file']}"
 
 
 def test_productfile_is_valid_cog(processed) -> None:
@@ -120,13 +126,13 @@ def test_productfile_is_valid_cog(processed) -> None:
 def test_stats_max_reasonable(processed) -> None:
     # for p in processed:
     #     if p.reasonable_max is not None:
-    #         assert p.reasonable_max < p.max(), "maximum value in grid is unreasonably high"
+    #         assert p.reasonable_max < p.max, "maximum value in grid is unreasonably high"
     pass
 
 
 def test_stats_min_reasonable(processed) -> None:
     # for p in processed:
     #     if p.reasonable_min is not None:
-    #         assert p.reasonable_max < p.max(), "maximum value in grid is unreasonably high"
+    #         assert p.reasonable_min < p.min, "minimum value in grid is unreasonably low"
     pass
 
