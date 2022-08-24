@@ -50,21 +50,21 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     outfile_list = []
 
     filetype_elements = {
-        "nbm-co-airtemp": {
-            "GRIB_ELEMENT": "T",
-            "GRIB_SHORT_NAME": "2-HTGL",
-            "GRIB_UNIT": "[C]",
+        "airtemp": {
+            "GRIB_COMMENT": "Temperature \\[C\\]",
+            "GRIB_ELEMENT": "^T$",
+            "GRIB_SHORT_NAME": "2\\-HTGL",
+            "GRIB_UNIT": "\\[C\\]",
         },
-        "nbm-co-qpf": {
+        "qpf": {
             "GRIB_ELEMENT": "QPF01",
-            "GRIB_SHORT_NAME": "0-SFC",
+            "GRIB_SHORT_NAME": "0\\-SFC",
         },
     }
 
     try:
 
         filename = os.path.basename(src)
-        filename_dst = utils.file_extension(filename)
 
         # Take the source path as the destination unless defined.
         # User defined `dst` not programatically removed unless under
@@ -74,9 +74,9 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         ds = gdal.Open(src)
 
-        for filetype, attr in filetype_elements.items():
+        for param, attr in filetype_elements.items():
             try:
-                if (band_number := cgdal.find_band(ds, attr)) is None:
+                if (band_number := cgdal.find_band(ds, attr, True)) is None:
                     raise Exception("Band number not found for attributes: {attr}")
 
                 logger.debug(f"Band number '{band_number}' found for attributes {attr}")
@@ -98,8 +98,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
 
                 dt_valid_str = dt_valid.strftime("%Y%m%d")
-                filename_ = utils.file_extension(
-                    filename, suffix=f"-{dt_valid_str}-{filetype}.tif"
+                filename_dst = utils.file_extension(
+                    filename, preffix=f"{dt_valid_str}-", suffix=f"-{param}.tif"
                 )
 
                 cgdal.gdal_translate_w_options(
@@ -112,7 +112,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
                 outfile_list.append(
                     {
-                        "filetype": filetype,
+                        "filetype": f"nbm-co-{param}",
                         "file": tif,
                         "datetime": dt_valid.isoformat(),
                         "version": dt_ref.isoformat(),

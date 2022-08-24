@@ -14,6 +14,7 @@ GTiff Creation Options to be a COG:
 
 import os
 import pathlib
+import re
 import subprocess
 from typing import List
 
@@ -162,7 +163,7 @@ def gdal_translate_w_overviews(
 
 
 # get a band based on provided attributes in the metadata
-def find_band(data_set: "gdal.Dataset", attr: dict = {}):
+def find_band(data_set: "gdal.Dataset", attr: dict = {}, regex_enabled: bool = False):
     """Return the band number
 
     Parameters
@@ -179,15 +180,22 @@ def find_band(data_set: "gdal.Dataset", attr: dict = {}):
     """
     count = data_set.RasterCount
     for b in range(1, count + 1):
+        has_attr = 0
         try:
             raster = data_set.GetRasterBand(b)
             meta = raster.GetMetadata_Dict()
-            has_attr = [
-                True
-                for key, val in attr.items()
-                if (key in meta and val in raster.GetMetadataItem(key))
-            ]
-            if len(has_attr) == len(attr):
+            for key, val in attr.items():
+                if (key in meta):
+                    # Many grib values include regex special characters. e.g. [C] (degrees celsius)
+                    # Function escapes special characters by default to avoid breaking changes by introducing re.search().
+                    # Escaping special characters by default will cause this helper function to behave the same way
+                    # it did previously when looking for a substring using "in".
+                    _val = val
+                    if not regex_enabled:
+                        _val = re.escape(_val)
+                    if re.search(_val, raster.GetMetadataItem(key)) is not None:
+                        has_attr += 1
+            if has_attr == len(attr):
                 logger.debug(f"{has_attr=}")
                 return b
 

@@ -1,3 +1,5 @@
+from utils import nbm_co_01h_fixture_info_factory
+
 # LIMITS includes common repeated reasonability limits for
 # testing grid cell values against expected results
 LIMITS = {
@@ -48,5 +50,10 @@ FIXTURE_INFO = [
     ("prism-tmin-early", "prism-tmin-early/PRISM_tmin_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-tmin-stable", "prism-tmin-stable/PRISM_tmin_stable_4kmD2_19810929_bil.zip", None, None),
     ("wpc-qpf-2p5km", "wpc-qpf-2p5km/p06m_2022080912f168.grb", None, None),
+]
+
+# Append dynamic nbm-co-01h fixtures
+FIXTURE_INFO += [
+    nbm_co_01h_fixture_info_factory("00", "001"),
 ]
 # fmt: on
