@@ -121,8 +121,8 @@ def decompress(src: str, dst: str = "/tmp", recursive: bool = False):
             with open(src, "wb") as fp:
                 fp.write(content)
     except OSError as ex:
-        logger.info(f"Not gzip: {src}")
-        logger.info(f"{type(ex).__name__}: {this}: {ex}")
+        logger.debug(f"Not gzip: {src}")
+        logger.debug(f"{type(ex).__name__}: {this}: {ex}")
 
     try:
         if zipfile.is_zipfile(src):
