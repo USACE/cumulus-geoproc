@@ -11,31 +11,11 @@ import pytest
 from cumulus_geoproc.processors import geo_proc
 from cumulus_geoproc.utils import cgdal
 
-from config import FIXTURE_INFO
+from config import FIXTURE_INFO, DATE_FORMATS
 
 
 # Prevent gdal from creating *.aux.xml stat files
 os.environ["GDAL_PAM_ENABLED"] = "NO"
-
-# """
-# print(ncds.variables)
-
-# {'Total_precipitation': <class 'netCDF4._netCDF4.Variable'>
-# float32 Total_precipitation(time, y, x)
-#     units: kg/m^2
-#     standard_name: precipitation_amount
-#     long_name: 01 hr Precip
-#     cell_methods: time: sum
-#     missing_value: -9999.0
-#     grid_mapping: Polar_Stereographic
-#     coordinates: time y x 
-#     udunits: millimeter
-#     uiname: 01 hr precip estimate
-#     valid_range: [   0. 1000.]
-#     _FillValue: -9999.0
-#     _n3D: 0
-#     levels: SFC
-# """
 
 
 class ProcessorResult:
@@ -52,15 +32,18 @@ class ProcessorResult:
     def process(self):
         try:
             os.makedirs(self.output_directory, exist_ok=True)
-            return geo_proc(plugin=self.processor, src=self.infile, dst=self.output_directory)
+            return geo_proc(
+                plugin=self.processor, src=self.infile, dst=self.output_directory
+            )
         except:
             return []
+
     @property
     def min(self):
         # TODO: Return maximum gridcell value in all grids returned by process() to be used in integration tests
         # Can probably call gdalinfo -stats (or gdal python binding equivalent) to get min,max.
         pass
-    
+
     @property
     def max(self):
         # TODO: Return minimum gridcell value in all grids returned by process() to be used in integration tests
@@ -78,6 +61,7 @@ def processed():
 ###############################################################################################################
 # TEST CASES
 ###############################################################################################################
+
 
 def test_infile_exists(processed) -> None:
     for p in processed:
@@ -100,7 +84,9 @@ def test_productfile_version_is_none(processed) -> None:
     # Version should be None, or a version that is not the default version
     for p in processed:
         for r in p.result:
-            assert r["version"] is None or not r["version"].startswith("1111-11-11T11:11:11"), """
+            assert r["version"] is None or not r["version"].startswith(
+                "1111-11-11T11:11:11"
+            ), """
             Version explicitly set to default version in database.
             Recommend setting version = None and letting the database handle this
             """
@@ -109,11 +95,21 @@ def test_productfile_version_is_none(processed) -> None:
 def test_productfile_filename_has_datetime(processed) -> None:
     for p in processed:
         for r in p.result:
-            # NOTE: Optional _ for product cnrfc-qpe-06h; source file uses YYYYMMDD_HHHH
-            match = re.search(r"\d{4}\d{2}\d{2}_?\d{2}", os.path.basename(r["file"]))
-            assert match is not None and datetime.strptime(
-                match.group().replace("_", ""), "%Y%M%d%H"
-            ), f"output filename does not contain valid datetime string: {r['file']}"
+            match = None
+            for fmt, regex in DATE_FORMATS:
+                try:
+                    match = re.search(regex, os.path.basename(r["file"]))
+                    if match.group():
+                        assert datetime.strptime(
+                            match.group(), fmt
+                        ), f"output filename does not contain valid datetime string: {r['file']}"
+                        break
+                except:
+                    pass
+
+            assert (
+                match is not None
+            ), f"output filename does not contain datetime string: {r['file']}"
 
 
 def test_productfile_is_valid_cog(processed) -> None:
@@ -135,4 +131,3 @@ def test_stats_min_reasonable(processed) -> None:
     #     if p.reasonable_min is not None:
     #         assert p.reasonable_min < p.min, "minimum value in grid is unreasonably low"
     pass
-
