@@ -1,11 +1,21 @@
-
 # LIMITS includes common repeated reasonability limits for
 # testing grid cell values against expected results
 LIMITS = {
-    'PRECIP_MIN': 0,
-    'PRECIP_MAX': 100,
+    "PRECIP_MIN": 0,
+    "PRECIP_MAX": 100,
 }
 
+# Valid date formats that may appear in the filenames
+# Date without hour is last to accomodate daily products
+DATE_FORMATS = [
+    ("%Y%m%d%H", r"\d{4}\d{2}\d{2}\d{2}"),
+    ("%Y%m%d_%H%M", r"\d{4}\d{2}\d{2}_\d{4}"),
+    ("%Y-%m-%d.%H", r"\d{4}-\d{2}-\d{2}\.\d{2}"),
+    ("%Y%m%d-%H", r"\d{4}\d{2}\d{2}-\d{2}"),
+    ("%Y%m%d", r"\d{4}\d{2}\d{2}"),
+]
+
+# fmt: off
 # fixture_info includes tuples with pattern (<processor>, <testfile relative path>, <reasonable min>, <reasonable max>)
 FIXTURE_INFO = [
     ("abrfc-qpe-01h", "abrfc-qpe-01h/abrfc_qpe_01hr_2022080816Z.nc", LIMITS["PRECIP_MIN"], LIMITS['PRECIP_MAX']),
@@ -39,3 +49,4 @@ FIXTURE_INFO = [
     ("prism-tmin-stable", "prism-tmin-stable/PRISM_tmin_stable_4kmD2_19810929_bil.zip", None, None),
     ("wpc-qpf-2p5km", "wpc-qpf-2p5km/p06m_2022080912f168.grb", None, None),
 ]
+# fmt: on
