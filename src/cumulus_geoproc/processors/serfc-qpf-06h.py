@@ -78,9 +78,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         ref_time_match = time_pattern.match(raster.GetMetadataItem("GRIB_REF_TIME"))
         dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
 
-        cgdal.gdal_translate_w_options()(
-            tif := os.path.join(dst, filename_dst),
-            ds,
+        cgdal.gdal_translate_w_options(
+            tif := os.path.join(dst, filename_dst), ds, bandList=[band_number]
         )
 
         # validate COG
