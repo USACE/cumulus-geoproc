@@ -53,9 +53,10 @@ class ProcessorResult:
 def nbm_co_01h_fixture_info_factory(t_string, f_string):
     yesterday = datetime.utcnow() - timedelta(days=1)
     url_base = f"https://nomads.ncep.noaa.gov/pub/data/nccf/com/blend/prod/blend.{yesterday.strftime('%Y%m%d')}/{t_string}/core"
-    filename = f"blend.t{t_string}z.core.f{f_string}.co.grib2"
+    src_filename = f"blend.t{t_string}z.core.f{f_string}.co.grib2"
+    dst_filename = f"blend.{yesterday.strftime('%Y%m%d')}t{t_string}z.core.f{f_string}.co.grib2"
     
-    return ("nbm-co-01h", f"nbm-co-01h/{filename}", None, None, f"{url_base}/{filename}")
+    return ("nbm-co-01h", f"nbm-co-01h/{dst_filename}", None, None, f"{url_base}/{src_filename}")
 
 
 if __name__ == "__main__":
