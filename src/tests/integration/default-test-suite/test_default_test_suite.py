@@ -1,5 +1,6 @@
 import os, glob, re
 from datetime import datetime
+import hashlib
 import pytest
 
 # from osgeo import gdal
@@ -66,9 +67,22 @@ def test_productfile_filename_is_unique(processed) -> None:
     for p in processed:
         filenames = [r["file"] for r in p.result]
         for filename in filenames:
-            assert sum(
-                [1 for _f in filenames if _f == filename ]
-            ) == 1, f"non-unique filename in output: {p.processor}; {filename}"
+            assert (
+                sum([1 for _f in filenames if _f == filename]) == 1
+            ), f"non-unique filename in output: {p.processor}; {filename}"
+
+
+def test_productfile_hash_is_unique(processed):
+    # When multiple output files are generated, verify the contents
+    # of each file is unique
+    for p in processed:
+        hashes = [
+            hashlib.md5(open(r["file"], "rb").read()).hexdigest() for r in p.result
+        ]
+        for h in hashes:
+            assert (
+                sum([1 for _h in hashes if _h == h]) == 1
+            ), f"non-unique file hash in output: {p.processor}; {h}"
 
 
 def test_productfile_filename_has_datetime(processed) -> None:
