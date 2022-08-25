@@ -1,7 +1,7 @@
 """
 # Weather Research and Forecasting (WRF)
 
-A next-generation mesoscale numerical weather prediction system designed for both atmospheric research and operational forecasting applications
+A next-generation mesoscale numerical weather prediction system designed for both atmospheric research and operational forecasting applications.
 
 **details** [here](https://www.mmm.ucar.edu/weather-research-and-forecasting-model)
 
@@ -80,20 +80,12 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         # extract the single grid from the source and create a temporary netCDF file
         with Dataset(src, "r") as ncsrc:
-            _, nrows, ncols = ncsrc.variables["var"].shape
             nctime = ncsrc.variables["time"]
-            nclat = ncsrc.variables["lat"][:]
-            nclon = ncsrc.variables["lon"][:]
-            ullr = [nclon.min(), nclat.max(), nclon.max(), nclat.min()]
             for dt in num2date(
                 nctime[:], nctime.units, only_use_cftime_datetimes=False
             ):
                 dt_valid = dt.replace(tzinfo=timezone.utc)
                 idx = date2index(dt, nctime)
-
-                # TODO: Remove after testing
-                if idx > 5:
-                    break
 
                 ncdst_path = dst_dir.joinpath(src_name)
                 with Dataset(str(ncdst_path), "w") as ncdst:
@@ -150,14 +142,3 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             logger.error(f"{k}: {v}")
 
     return outfile_list
-
-
-if __name__ == "__main__":
-    src = "/Users/rdcrljsg/projects/cumulus-geoproc/cumulus-geoproc-test-data/wrf-columbia/PRECIPAH.nc"
-    dst = "/Users/rdcrljsg/Downloads/wrf-columbia"
-    results = process(
-        src=src,
-        dst=dst,
-    )
-    for result in results:
-        print(result)
