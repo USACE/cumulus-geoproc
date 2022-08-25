@@ -58,9 +58,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
     try:
         filename = os.path.basename(src)
-        filename_ = utils.file_extension(filename, suffix="")
-
-        filename_temp = Template("${filename}-${ymd}.tif")
 
         # Take the source path as the destination unless defined.
         # User defined `dst` not programatically removed unless under
@@ -100,14 +97,16 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 tdelta = (tdelta2 - tdelta1).seconds  # Extract Band; Convert to COG
 
                 if tdelta in f_type_dict:
-                    _filename = filename_temp.substitute(
-                        filename=filename_, ymd=vtime.strftime("%Y%m%d%H%M")
+
+                    filename_dst = utils.file_extension(
+                        filename, suffix=f"-{vtime.strftime('%Y%m%d%H%M')}.tif"
                     )
-                    logger.debug(f"New Filename: {_filename}")
+                    logger.debug(f"New Filename: {filename_dst}")
 
                     cgdal.gdal_translate_w_options(
-                        tif := os.path.join(dst, _filename),
+                        tif := os.path.join(dst, filename_dst),
                         ds,
+                        bandList=[band_number],
                     )
 
                     # validate COG
