@@ -18,7 +18,7 @@ testutils = importlib.import_module("default-test-suite.utils")
 
 @pytest.fixture(scope="module")
 def processed():
-        _info = testutils.nbm_co_01h_fixture_info_factory("00", "001")
+        _info = testutils.nbm_co_01h_fixture_info_factory("00", "002")
         return testutils.ProcessorResult(*_info)
 
 

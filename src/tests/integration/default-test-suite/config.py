@@ -55,5 +55,7 @@ FIXTURE_INFO = [
 # Append dynamic nbm-co-01h fixtures
 FIXTURE_INFO += [
     nbm_co_01h_fixture_info_factory("00", "001"),
+    nbm_co_01h_fixture_info_factory("00", "006"),
+    nbm_co_01h_fixture_info_factory("01", "001"),
 ]
 # fmt: on
