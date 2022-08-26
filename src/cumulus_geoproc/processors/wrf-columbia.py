@@ -14,7 +14,6 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 import os
 import sys
 from datetime import timezone
-from pathlib import Path
 
 import pyplugs
 from cumulus_geoproc import logger
@@ -53,10 +52,12 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
     outfile_list = []
 
-    src_path = Path(src)
-    src_stem_parts = src_path.stem.split("-")
-    src_stem_parts.pop(2)  # do not need the year
-    product_slug = "-".join(src_stem_parts)  # join back to be the product slug
+    src_dir = os.path.dirname(src)
+    src_filename = os.path.basename(src)
+    src_stem = os.path.splitext(src_filename)[0]
+
+    wrf, basin, _, para = src_stem.stem.split("-")
+    product_slug = "-".join([wrf, basin, para])  # join back to be the product slug
 
     try:
         # extract the single grid from the source and create a temporary netCDF file
@@ -68,7 +69,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 dt_valid = dt.replace(tzinfo=timezone.utc)
                 idx = date2index(dt, nctime)
 
-                ncdst_path = os.path.join(dst, src_path.name)
+                ncdst_path = os.path.join(dst, para)
                 with Dataset(ncdst_path, "w") as ncdst:
                     # Create dimensions
                     for name, dimension in ncsrc.dimensions.items():
@@ -147,7 +148,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback_details = {
-            "filename": Path(exc_traceback.tb_frame.f_code.co_filename).name,
+            "filename": os.path.basename(exc_traceback.tb_frame.f_code.co_filename),
             "line number": exc_traceback.tb_lineno,
             "method": exc_traceback.tb_frame.f_code.co_name,
             "type": exc_type.__name__,
