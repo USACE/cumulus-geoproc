@@ -11,9 +11,9 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 """
 
 
+import sys
 from datetime import timezone
 from pathlib import Path
-import sys
 
 import pyplugs
 from cumulus_geoproc import logger
@@ -52,32 +52,14 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
     outfile_list = []
 
-    this_file_stem = Path(__file__).stem
-
-    product_acquirable = {
-        "DEWPNT_T": f"{this_file_stem}-dewpnt-t",
-        "GROUND_T": f"{this_file_stem}-ground-t",
-        "LWDOWN__": f"{this_file_stem}-lwdown",
-        "PRECIPAH": f"{this_file_stem}-precipah",
-        "PSTARCRS": f"{this_file_stem}-pstarcrs",
-        "RH______": f"{this_file_stem}-rh",
-        "SWDOWN__": f"{this_file_stem}-swdown",
-        "T2______": f"{this_file_stem}-t2",
-        "U10_____": f"{this_file_stem}-u10",
-        "V10_____": f"{this_file_stem}-v10",
-        "VAPOR_PS": f"{this_file_stem}-vapor-ps",
-    }
-
     src_path = Path(src)
-    src_name = src_path.name
-    src_stem = src_path.stem
+    src_stem_parts = src_path.stem.split("-")
+    src_stem_parts.pop(2)  # do not need the year
+    product_slug = "-".join(src_stem_parts)  # join back to be the product slug
 
     dst_dir = Path(dst)
 
     try:
-        if not src_stem in product_acquirable:
-            raise Exception(f"'{src_stem}' not in product acquirable dictionary")
-
         # extract the single grid from the source and create a temporary netCDF file
         with Dataset(src, "r") as ncsrc:
             nctime = ncsrc.variables["time"]
@@ -87,7 +69,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 dt_valid = dt.replace(tzinfo=timezone.utc)
                 idx = date2index(dt, nctime)
 
-                ncdst_path = dst_dir.joinpath(src_name)
+                ncdst_path = dst_dir.joinpath(src_path.name)
                 with Dataset(str(ncdst_path), "w") as ncdst:
                     # Create dimensions
                     for name, dimension in ncsrc.dimensions.items():
@@ -107,7 +89,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     tiffile := dst_dir.joinpath(
                         ".".join(
                             [
-                                product_acquirable[src_stem],
+                                product_slug,
                                 dt_valid.strftime("%Y%m%d%H"),
                                 "tif",
                             ]
@@ -118,18 +100,51 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     srcSRS="EPSG:4326",
                     dstSRS="EPSG:4326",
                     resampleAlg="bilinear",
+                    creationOptions=[
+                        "COMPRESS=DEFLATE",
+                        "PREDICTOR=2",
+                    ],
                     geoloc=True,
                 )
 
+                # This GDAL Warp is essentially what would happen from
+                # the Cumulus packager before writing a record to DSS
+                # proj4_aea = "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+                # gdal.Warp(
+                #     another_tiffile := dst_dir.joinpath(
+                #         ".".join(
+                #             [
+                #                 product_slug,
+                #                 dt_valid.strftime("%Y%m%d%H"),
+                #                 "tiff",
+                #             ]
+                #         )
+                #     ).as_posix(),
+                #     tiffile,
+                #     format="COG",
+                #     outputBounds=[-2304000, 2034000, -804000, 3624000],
+                #     outputBoundsSRS=proj4_aea,
+                #     xRes=2000,
+                #     yRes=2000,
+                #     dstSRS=proj4_aea,
+                #     outputType=gdal.GDT_Float32,
+                #     resampleAlg="bilinear",
+                #     creationOptions=[
+                #         "COMPRESS=DEFLATE",
+                #         "PREDICTOR=2",
+                #     ],
+                #     dstNodata=-9999,
+                # )
+
                 outfile_list.append(
                     {
-                        "filetype": product_acquirable[src_stem],
+                        "filetype": product_slug,
                         "file": tiffile,
                         "datetime": dt_valid.isoformat(),
                         "version": None,
                     }
                 )
-    except Exception as ex:
+    except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback_details = {
             "filename": Path(exc_traceback.tb_frame.f_code.co_filename).name,
