@@ -11,6 +11,7 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 """
 
 
+import os
 import sys
 from datetime import timezone
 from pathlib import Path
@@ -57,8 +58,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     src_stem_parts.pop(2)  # do not need the year
     product_slug = "-".join(src_stem_parts)  # join back to be the product slug
 
-    dst_dir = Path(dst)
-
     try:
         # extract the single grid from the source and create a temporary netCDF file
         with Dataset(src, "r") as ncsrc:
@@ -69,8 +68,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 dt_valid = dt.replace(tzinfo=timezone.utc)
                 idx = date2index(dt, nctime)
 
-                ncdst_path = dst_dir.joinpath(src_path.name)
-                with Dataset(str(ncdst_path), "w") as ncdst:
+                ncdst_path = os.path.join(dst, src_path.name)
+                with Dataset(ncdst_path, "w") as ncdst:
                     # Create dimensions
                     for name, dimension in ncsrc.dimensions.items():
                         dim_size = 1 if name == "time" else dimension.size
@@ -86,15 +85,16 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                         ncdst.variables[name].setncatts(ncsrc.variables[name].__dict__)
 
                 gdal.Warp(
-                    tiffile := dst_dir.joinpath(
+                    tiffile := os.path.join(
+                        dst,
                         ".".join(
                             [
                                 product_slug,
                                 dt_valid.strftime("%Y%m%d%H"),
                                 "tif",
                             ]
-                        )
-                    ).as_posix(),
+                        ),
+                    ),
                     f"NETCDF:{ncdst_path}:var",
                     format="COG",
                     srcSRS="EPSG:4326",
