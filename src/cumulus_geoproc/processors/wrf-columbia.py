@@ -18,7 +18,6 @@ from tempfile import TemporaryDirectory
 
 import pyplugs
 from cumulus_geoproc import logger
-from cumulus_geoproc.utils import cgdal
 from netCDF4 import Dataset, date2index, num2date
 from osgeo import gdal
 
@@ -72,7 +71,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
                 # context handling temp dir for extracting data to .nc
                 with TemporaryDirectory(dir=dst) as tmpdir:
-                    ncdst_path = os.path.join(tmpdir, para + ".nc")
+                    ncdst_path = os.path.join(tmpdir, para + str(idx) + ".nc")
                     # context handling writing to .nc file
                     with Dataset(ncdst_path, "w") as ncdst:
                         # Create dimensions
@@ -116,34 +115,34 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                         geoloc=True,
                     )
 
-                    # This GDAL Warp is essentially what would happen from
-                    # the Cumulus packager before writing a record to DSS
-                    # proj4_aea = "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
-                    # gdal.Warp(
-                    #     another_tiffile := dst_dir.joinpath(
-                    #         ".".join(
-                    #             [
-                    #                 product_slug,
-                    #                 dt_valid.strftime("%Y%m%d%H"),
-                    #                 "tiff",
-                    #             ]
-                    #         )
-                    #     ).as_posix(),
-                    #     tiffile,
-                    #     format="COG",
-                    #     outputBounds=[-2304000, 2034000, -804000, 3624000],
-                    #     outputBoundsSRS=proj4_aea,
-                    #     xRes=2000,
-                    #     yRes=2000,
-                    #     dstSRS=proj4_aea,
-                    #     outputType=gdal.GDT_Float32,
-                    #     resampleAlg="bilinear",
-                    #     creationOptions=[
-                    #         "COMPRESS=DEFLATE",
-                    #         "PREDICTOR=2",
-                    #     ],
-                    #     dstNodata=-9999,
-                    # )
+                # This GDAL Warp is essentially what would happen from
+                # the Cumulus packager before writing a record to DSS
+                # proj4_aea = "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+                # gdal.Warp(
+                #     another_tiffile := dst_dir.joinpath(
+                #         ".".join(
+                #             [
+                #                 product_slug,
+                #                 dt_valid.strftime("%Y%m%d%H"),
+                #                 "tiff",
+                #             ]
+                #         )
+                #     ).as_posix(),
+                #     tiffile,
+                #     format="COG",
+                #     outputBounds=[-2304000, 2034000, -804000, 3624000],
+                #     outputBoundsSRS=proj4_aea,
+                #     xRes=2000,
+                #     yRes=2000,
+                #     dstSRS=proj4_aea,
+                #     outputType=gdal.GDT_Float32,
+                #     resampleAlg="bilinear",
+                #     creationOptions=[
+                #         "COMPRESS=DEFLATE",
+                #         "PREDICTOR=2",
+                #     ],
+                #     dstNodata=-9999,
+                # )
 
                 outfile_list.append(
                     {
@@ -164,5 +163,4 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         }
         for k, v in traceback_details.items():
             logger.error(f"{k}: {v}")
-
     return outfile_list
