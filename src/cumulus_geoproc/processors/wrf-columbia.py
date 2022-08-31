@@ -52,6 +52,13 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
     outfile_list = []
 
+    xres = yres = 2000
+    bbox = [-2304000, 2034000, -804000, 3624000]
+    proj4_aea = "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+
+    if dst is None:
+        dst = os.path.dirname(src)
+
     src_dir = os.path.dirname(src)
     src_filename = os.path.basename(src)
     src_stem = os.path.splitext(src_filename)[0]
@@ -105,53 +112,30 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                         ),
                         f"NETCDF:{ncdst_path}:var",
                         format="COG",
-                        srcSRS="EPSG:4326",
-                        dstSRS="EPSG:4326",
+                        outputBounds=bbox,
+                        outputBoundsSRS=proj4_aea,
+                        xRes=xres,
+                        yRes=yres,
+                        srcSRS="EPSG:4269",
+                        dstSRS=proj4_aea,
+                        outputType=gdal.GDT_Float32,
                         resampleAlg="bilinear",
                         creationOptions=[
                             "COMPRESS=DEFLATE",
                             "PREDICTOR=2",
                         ],
+                        dstNodata=-9999,
                         geoloc=True,
                     )
 
-                # This GDAL Warp is essentially what would happen from
-                # the Cumulus packager before writing a record to DSS
-                # proj4_aea = "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
-                # gdal.Warp(
-                #     another_tiffile := dst_dir.joinpath(
-                #         ".".join(
-                #             [
-                #                 product_slug,
-                #                 dt_valid.strftime("%Y%m%d%H"),
-                #                 "tiff",
-                #             ]
-                #         )
-                #     ).as_posix(),
-                #     tiffile,
-                #     format="COG",
-                #     outputBounds=[-2304000, 2034000, -804000, 3624000],
-                #     outputBoundsSRS=proj4_aea,
-                #     xRes=2000,
-                #     yRes=2000,
-                #     dstSRS=proj4_aea,
-                #     outputType=gdal.GDT_Float32,
-                #     resampleAlg="bilinear",
-                #     creationOptions=[
-                #         "COMPRESS=DEFLATE",
-                #         "PREDICTOR=2",
-                #     ],
-                #     dstNodata=-9999,
-                # )
-
-                outfile_list.append(
-                    {
-                        "filetype": product_slug,
-                        "file": tiffile,
-                        "datetime": dt_valid.isoformat(),
-                        "version": None,
-                    }
-                )
+                    outfile_list.append(
+                        {
+                            "filetype": product_slug,
+                            "file": tiffile,
+                            "datetime": dt_valid.isoformat(),
+                            "version": None,
+                        }
+                    )
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback_details = {

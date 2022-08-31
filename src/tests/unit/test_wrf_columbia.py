@@ -1,8 +1,15 @@
+"""
+# Pytests for WRF Columbia
+"""
+
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+import pytest
 from cumulus_geoproc.processors import geo_proc
 
-
+# TODO: Add additional tests
+@pytest.mark.skip(reason="Local testing only due to test file size")
 def test_dewpnt_t():
     fixtures = Path("/src/tests/integration/fixtures")
     dewpnt_t = Path(
