@@ -136,9 +136,19 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     ncvar_arr, fill_value=nodata_value
                 )
 
+                tiffile = os.path.join(
+                    dst,
+                    ".".join(
+                        [
+                            product_slug,
+                            dt_valid.strftime("%Y%m%d%H"),
+                            "tif",
+                        ]
+                    ),
+                )
                 # Create() GTiff with resampled Albers data
                 raster = gdal.GetDriverByName("GTiff").Create(
-                    "/vsimem/",
+                    f"/vsimem/{tiffile}",
                     xsize=ncols,
                     ysize=nrows,
                     bands=1,
@@ -153,17 +163,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
                 # Translate newly created GTiff to COG because COG does not have Create() method
                 gdal.Translate(
-                    tiffile := os.path.join(
-                        dst,
-                        ".".join(
-                            [
-                                product_slug,
-                                dt_valid.strftime("%Y%m%d%H"),
-                                "tif",
-                            ]
-                        ),
-                    ),
-                    f"/vsimem/",
+                    tiffile,
+                    f"/vsimem/{tiffile}",
                     format="COG",
                     outputType=gdal.GDT_Float32,
                     resampleAlg="bilinear",
