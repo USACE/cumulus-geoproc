@@ -18,11 +18,11 @@ from datetime import timezone
 
 import numpy
 import pyplugs
-from pyresample.bilinear import NumpyBilinearResampler
-from pyresample import geometry
 from cumulus_geoproc import logger
 from netCDF4 import Dataset, date2index, num2date
 from osgeo import gdal, osr
+from pyresample import geometry
+from pyresample.bilinear import NumpyBilinearResampler
 
 
 @pyplugs.register
@@ -132,7 +132,9 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 ncvar_arr = ncvar[1:-1, 1:-1]
 
                 # resample to target
-                ncvar_arr_resampled = resampler.resample(ncvar_arr, fill_value=nodata_value)
+                ncvar_arr_resampled = resampler.resample(
+                    ncvar_arr, fill_value=nodata_value
+                )
 
                 # Create() GTiff with resampled Albers data
                 raster = gdal.GetDriverByName("GTiff").Create(
