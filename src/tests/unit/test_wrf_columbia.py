@@ -8,7 +8,7 @@ import pytest
 from cumulus_geoproc.processors import geo_proc
 
 # TODO: Add additional tests
-# @pytest.mark.skip(reason="Local testing only due to test file size")
+@pytest.mark.skip(reason="Local testing only due to test file size")
 def test_precipah():
     fixtures = Path("/src/tests/integration/fixtures")
 
