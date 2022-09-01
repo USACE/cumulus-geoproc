@@ -1,7 +1,6 @@
 """
 # Pytests for WRF Columbia
 """
-
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -9,18 +8,15 @@ import pytest
 from cumulus_geoproc.processors import geo_proc
 
 # TODO: Add additional tests
-@pytest.mark.skip(reason="Local testing only due to test file size")
-def test_dewpnt_t():
+# @pytest.mark.skip(reason="Local testing only due to test file size")
+def test_precipah():
     fixtures = Path("/src/tests/integration/fixtures")
-    dewpnt_t = Path(
-        "wrfout/d03fmt/reconstruction/2000s/ncf/wrf-columbia-2000s-dewpnt_t.nc"
-    )
 
     tmpdir = TemporaryDirectory()
 
     processed = geo_proc(
         plugin="wrf-columbia",
-        src=str(fixtures / dewpnt_t),
+        src=str(fixtures / "wrf-columbia-1980w-precipah.nc"),
         dst=tmpdir.name,
     )
 

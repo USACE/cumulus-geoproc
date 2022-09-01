@@ -1,4 +1,4 @@
-FROM osgeo/gdal:ubuntu-small-3.5.0
+FROM osgeo/gdal:ubuntu-full-3.5.0
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"

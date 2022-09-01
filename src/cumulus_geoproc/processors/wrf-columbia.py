@@ -14,9 +14,7 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 import math
 import os
 import sys
-from datetime import datetime, timezone
-from tempfile import TemporaryDirectory
-from typing import List
+from datetime import timezone
 
 import numpy
 import pyplugs
@@ -133,9 +131,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 ncvar = ncsrc.variables["var"][idx]
                 ncvar_arr = ncvar[1:-1, 1:-1]
 
-                if dt != datetime(1980, 1, 12, 17):
-                    continue
-
                 # resample to target
                 ncvar_arr_resampled = resampler.resample(ncvar_arr, fill_value=nodata_value)
 
@@ -184,6 +179,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                         "version": None,
                     }
                 )
+
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback_details = {
