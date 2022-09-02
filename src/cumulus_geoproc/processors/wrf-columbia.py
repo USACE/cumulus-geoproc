@@ -141,7 +141,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     ".".join(
                         [
                             product_slug,
-                            dt_valid.strftime("%Y%m%d%H"),
+                            dt_valid.strftime("%Y_%m_%d_%H"),
                             "tif",
                         ]
                     ),
