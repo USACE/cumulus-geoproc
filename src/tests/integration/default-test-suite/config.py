@@ -1,3 +1,5 @@
+from utils import nbm_co_01h_fixture_info_factory
+
 # LIMITS includes common repeated reasonability limits for
 # testing grid cell values against expected results
 LIMITS = {
@@ -29,6 +31,9 @@ FIXTURE_INFO = [
     ("mbrfc-krf-qpe-01h", "mbrfc-krf-qpe-01h/krfqpe_2022080921z.grib.gz", None, None),
     ("mbrfc-krf-qpf-06h", "mbrfc-krf-qpf-06h/krf_qpf_grib_2022080918f168.grb.gz", None, None),
     ("naefs-mean-06h", "naefs-mean-06h/NAEFSmean_netcdf2022080912.nc", None, None),
+    ("ndfd-conus-airtemp", "ndfd-conus-airtemp/ds.airtemp_202208010054-1-3.bin", None, None),
+    ("ndfd-conus-airtemp", "ndfd-conus-airtemp/ds.airtemp_202208010533-4-7.bin", None, None),
+    ("ndfd-conus-qpf-06h", "ndfd-conus-qpf-06h/ds.qpf_202208250054.bin", None, None),
     ("ncep-mrms-v12-msqpe01h-p1-alaska","ncep-mrms-v12-msqpe01h-p1-alaska/MRMS_MultiSensor_QPE_01H_Pass1_00.00_20220809-150000.grib2.gz", None, None),
     ("ncep-mrms-v12-msqpe01h-p1-carib", "ncep-mrms-v12-msqpe01h-p1-carib/MRMS_MultiSensor_QPE_01H_Pass1_00.00_20220809-150000.grib2.gz", None, None),
     ("ncep-mrms-v12-msqpe01h-p2-alaska", "ncep-mrms-v12-msqpe01h-p2-alaska/MRMS_MultiSensor_QPE_01H_Pass2_00.00_20220809-150000.grib2.gz", None, None),
@@ -48,5 +53,12 @@ FIXTURE_INFO = [
     ("prism-tmin-early", "prism-tmin-early/PRISM_tmin_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-tmin-stable", "prism-tmin-stable/PRISM_tmin_stable_4kmD2_19810929_bil.zip", None, None),
     ("wpc-qpf-2p5km", "wpc-qpf-2p5km/p06m_2022080912f168.grb", None, None),
+]
+
+# Append dynamic nbm-co-01h fixtures
+FIXTURE_INFO += [
+    nbm_co_01h_fixture_info_factory("00", "001"),
+    nbm_co_01h_fixture_info_factory("00", "006"),
+    nbm_co_01h_fixture_info_factory("01", "001"),
 ]
 # fmt: on
