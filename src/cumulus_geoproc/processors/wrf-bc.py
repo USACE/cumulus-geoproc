@@ -131,11 +131,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 ncvar = ncsrc.variables["var"][idx]
                 ncvar_arr = ncvar[1:-1, 1:-1]
 
-                # ~~~~~~~~~~~~~~~~~ MAKE SURE TO TAKE THIS OUT ~~~~~~~~~~~~~~~~~~~~ #
-                if dt != datetime(1980, 1, 12, 17):
-                    continue
-                # ~~~~~~~~~~~~~~~~~ MAKE SURE TO TAKE THIS OUT ~~~~~~~~~~~~~~~~~~~~ #
-
                 # resample to target
                 ncvar_arr_resampled = resampler.resample(
                     ncvar_arr, fill_value=nodata_value
