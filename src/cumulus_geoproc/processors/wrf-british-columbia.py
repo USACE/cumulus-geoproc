@@ -5,7 +5,7 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 
 **details** [here](https://www.mmm.ucar.edu/weather-research-and-forecasting-model)
 
-## WRF British Columbia River Basin
+## WRF British Columbia
 
 """
 
@@ -77,6 +77,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     src_filename = os.path.basename(src)
     src_stem = os.path.splitext(src_filename)[0]
 
+    # wrf-bc-1980w-precipt.nc
     wrf, basin, _, para = src_stem.split("-")
     product_slug = "-".join([wrf, basin, para])  # join back to be the product slug
 
