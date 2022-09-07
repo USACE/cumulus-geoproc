@@ -13,7 +13,7 @@ A next-generation mesoscale numerical weather prediction system designed for bot
 import math
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import timezone
 
 import numpy
 import pyplugs
@@ -22,6 +22,21 @@ from netCDF4 import Dataset, date2index, num2date
 from osgeo import gdal, osr
 from pyresample import geometry
 from pyresample.bilinear import NumpyBilinearResampler
+
+# netCDF file "var" variable standard_name attribute
+standard_name = {
+    "TDP": "dewpntt",
+    "TSK": "groundt",
+    "GLW": "lwdown",
+    "PRECIPAH": "precipah",
+    "PSFC": "pstarcrs",
+    "RH": "rh",
+    "SWDOWN": "swdown",
+    "T2": "t2",
+    "U10": "u10",
+    "V10": "v10",
+    "EA": "vaporps",
+}
 
 
 @pyplugs.register
@@ -73,14 +88,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     nrows = math.floor((ymax - ymin) / yres)
     nodata_value = -9999
 
-    src_dir = os.path.dirname(src)
-    src_filename = os.path.basename(src)
-    src_stem = os.path.splitext(src_filename)[0]
-
-    # wrf-bc-1980w-precipt.nc
-    wrf, basin, _, para = src_stem.split("-")
-    product_slug = "-".join([wrf, basin, para])  # join back to be the product slug
-
     try:
         # extract the single grid from the source and create a temporary netCDF file
         with Dataset(src, "r") as ncsrc:
@@ -89,6 +96,11 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             nclat_arr = nclat[1:-1, 1:-1]
             nclon = ncsrc.variables["lon"]
             nclon_arr = nclon[1:-1, 1:-1]
+
+            # each netCDF file is a parameter and defined by the var standard_name attribute
+            ncvar = ncsrc.variables["var"]
+            parameter_name = standard_name[(ncvar.standard_name).strip()]
+            product_slug = f"wrf-bc-{parameter_name}"
 
             # pyresample uses center of lower left pixel
             xmin_pxl = xmin + (xres * 0.5)
@@ -130,6 +142,10 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 idx = date2index(dt, nctime)
                 ncvar = ncsrc.variables["var"][idx]
                 ncvar_arr = ncvar[1:-1, 1:-1]
+
+                # uncomment when testing locally
+                # if idx > 0:
+                #     break
 
                 # resample to target
                 ncvar_arr_resampled = resampler.resample(
