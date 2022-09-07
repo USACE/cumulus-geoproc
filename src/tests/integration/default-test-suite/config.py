@@ -15,6 +15,7 @@ DATE_FORMATS = [
     ("%Y-%m-%d.%H", r"\d{4}-\d{2}-\d{2}\.\d{2}"),
     ("%Y%m%d-%H", r"\d{4}\d{2}\d{2}-\d{2}"),
     ("%Y%m%d", r"\d{4}\d{2}\d{2}"),
+    ("%Y_%m_%d_%H", r"\d{4}_\d{2}_\d{2}_\d{2}"),
 ]
 
 # fmt: off
@@ -61,4 +62,35 @@ FIXTURE_INFO += [
     nbm_co_01h_fixture_info_factory("00", "006"),
     nbm_co_01h_fixture_info_factory("01", "001"),
 ]
+
+# append WRF Columbia
+# FIXTURE_INFO += [
+#         ("wrf-columbia", "wrf-columbia/DEWPNT_T.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/GROUND_T.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/LWDOWN__.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/PRECIPAH.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/PSTARCRS.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/RH______.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/SWDOWN__.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/T2______.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/U10_____.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/V10_____.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/VAPOR_PS.nc", None, None),
+#     ]
+
+# append WRF British Columbia
+# FIXTURE_INFO+=[
+#         ("wrf-bc", "wrf-bc/DEWPNT_T.nc", None, None),
+#         ("wrf-bc", "wrf-bc/GROUND_T.nc", None, None),
+#         ("wrf-bc", "wrf-bc/LWDOWN__.nc", None, None),
+#         ("wrf-bc", "wrf-bc/PRECIPAH.nc", None, None),
+#         ("wrf-bc", "wrf-bc/PSTARCRS.nc", None, None),
+#         ("wrf-bc", "wrf-bc/RH______.nc", None, None),
+#         ("wrf-bc", "wrf-bc/SWDOWN__.nc", None, None),
+#         ("wrf-bc", "wrf-bc/T2______.nc", None, None),
+#         ("wrf-bc", "wrf-bc/U10_____.nc", None, None),
+#         ("wrf-bc", "wrf-bc/V10_____.nc", None, None),
+#         ("wrf-bc", "wrf-bc/VAPOR_PS.nc", None, None),
+#     ]
+
 # fmt: on
