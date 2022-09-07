@@ -89,10 +89,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     nrows = math.floor((ymax - ymin) / yres)
     nodata_value = -9999
 
-    src_dir = os.path.dirname(src)
-    src_filename = os.path.basename(src)
-    src_stem = os.path.splitext(src_filename)[0]
-
     try:
         # extract the single grid from the source and create a temporary netCDF file
         with Dataset(src, "r") as ncsrc:
