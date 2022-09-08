@@ -101,10 +101,12 @@ def test_productfile_filename_has_datetime(processed) -> None:
                     # and the format (which matched from the regex)
 
                     try:
-                        dt_obj = datetime.strptime(match.group(), fmt)
+                        datetime.strptime(match.group(), fmt)
                     except ValueError:
-                        err = f"output filename does not contain valid datetime string: {r['file']}."
-                        err += f"  Unable to convert {match.group()} into a valid datetime format using {fmt}"
+                        err = (
+                            f"output filename does not contain valid datetime string: {r['file']}."
+                            f"  Unable to convert {match.group()} into a valid datetime format using {fmt}"
+                        )
 
                     assert err == None, "Invalid date format"
                     break

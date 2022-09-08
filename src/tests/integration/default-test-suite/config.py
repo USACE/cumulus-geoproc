@@ -13,9 +13,9 @@ LIMITS = {
 ## Keep it as the last entry.
 
 re_year     = r"(19|20)\d{2}"
-re_month    = r"(0|1)[1-9]"
-re_day      = r"(0\d{1}|[12]\d{1}|3[01])"
-re_hour     = r"(0\d{1}|1\d{1}|2[0-3])"
+re_month    = r"(0[1-9]|1[0-2])"
+re_day      = r"(0[1-9]|[1-2][0-9]|3[0-1])"
+re_hour     = r"([0-1][0-9]|2[0-3])"
 re_minute   = r"([0-5][0-9])"
 
 DATE_FORMATS = [
