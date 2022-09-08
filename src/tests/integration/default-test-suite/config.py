@@ -6,18 +6,27 @@ LIMITS = {
     "PRECIP_MIN": 0,
     "PRECIP_MAX": 100,
 }
+# fmt: off
 
 # Valid date formats that may appear in the filenames
-# Date without hour is last to accomodate daily products
+## NOTE: Date without hour is last to accomodate daily products
+## Keep it as the last entry.
+
+re_year     = r"(19|20)\d{2}"
+re_month    = r"(0[1-9]|1[0-2])"
+re_day      = r"(0[1-9]|[1-2][0-9]|3[0-1])"
+re_hour     = r"([0-1][0-9]|2[0-3])"
+re_minute   = r"([0-5][0-9])"
+
 DATE_FORMATS = [
-    ("%Y%m%d%H", r"\d{4}\d{2}\d{2}\d{2}"),
-    ("%Y%m%d_%H%M", r"\d{4}\d{2}\d{2}_\d{4}"),
-    ("%Y-%m-%d.%H", r"\d{4}-\d{2}-\d{2}\.\d{2}"),
-    ("%Y%m%d-%H", r"\d{4}\d{2}\d{2}-\d{2}"),
-    ("%Y%m%d", r"\d{4}\d{2}\d{2}"),
+    ("%Y%m%d%H",    rf"{re_year}{re_month}{re_day}{re_hour}"),
+    ("%Y%m%d_%H%M", rf"{re_year}{re_month}{re_day}_{re_hour}{re_minute}"),
+    ("%Y-%m-%d.%H", rf"{re_year}-{re_month}-{re_day}.{re_hour}"),
+    ("%Y%m%d-%H",   rf"{re_year}{re_month}{re_day}-{re_hour}"),
+    ("%m%d%Y%H",    rf"{re_month}{re_day}{re_year}{re_hour}"), # matches xmrg0809202212z.grb
+    ("%Y%m%d",      rf"{re_year}{re_month}{re_day}"),  # KEEP AS LAST ENTRY
 ]
 
-# fmt: off
 # fixture_info includes tuples with pattern (<processor>, <testfile relative path>, <reasonable min>, <reasonable max>)
 FIXTURE_INFO = [
     ("abrfc-qpe-01h", "abrfc-qpe-01h/abrfc_qpe_01hr_2022080816Z.nc", LIMITS["PRECIP_MIN"], LIMITS['PRECIP_MAX']),
