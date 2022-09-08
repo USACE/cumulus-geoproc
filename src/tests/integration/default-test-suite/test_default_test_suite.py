@@ -107,7 +107,6 @@ def test_productfile_filename_has_datetime(processed) -> None:
                         err += f"  Unable to convert {match.group()} into a valid datetime format using {fmt}"
 
                     assert err == None, "Invalid date format"
-                    assert dt_obj.year >= 1900, f"Year {dt_obj.year} is not >= 1900"
                     break
 
             assert (
