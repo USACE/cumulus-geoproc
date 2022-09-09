@@ -90,15 +90,26 @@ def test_productfile_filename_has_datetime(processed) -> None:
         for r in p.result:
             match = None
             for fmt, regex in DATE_FORMATS:
-                try:
-                    match = re.search(regex, os.path.basename(r["file"]))
-                    if match.group():
-                        assert datetime.strptime(
-                            match.group(), fmt
-                        ), f"output filename does not contain valid datetime string: {r['file']}"
-                        break
-                except:
-                    pass
+                match = re.search(regex, os.path.basename(r["file"]))
+                if match:
+                    # Note - trying to use: assert datetime.strptime(match.group(), fmt)
+                    # will not work as intended.  The errors produced are not user friendly
+                    # and helpful when tracing down which file and format caused the issue
+                    err = None
+
+                    # Try to create a datetime object using the matched date string
+                    # and the format (which matched from the regex)
+
+                    try:
+                        datetime.strptime(match.group(), fmt)
+                    except ValueError:
+                        err = (
+                            f"output filename does not contain valid datetime string: {r['file']}."
+                            f"  Unable to convert {match.group()} into a valid datetime format using {fmt}"
+                        )
+
+                    assert err == None, "Invalid date format"
+                    break
 
             assert (
                 match is not None

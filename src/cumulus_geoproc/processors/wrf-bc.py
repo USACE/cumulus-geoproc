@@ -143,10 +143,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 ncvar = ncsrc.variables["var"][idx]
                 ncvar_arr = ncvar[1:-1, 1:-1]
 
-                # uncomment when testing locally
-                # if idx > 0:
-                #     break
-
                 # resample to target
                 ncvar_arr_resampled = resampler.resample(
                     ncvar_arr, fill_value=nodata_value
