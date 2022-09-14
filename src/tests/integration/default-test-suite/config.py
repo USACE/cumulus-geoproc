@@ -21,6 +21,7 @@ re_minute   = r"([0-5][0-9])"
 DATE_FORMATS = [
     ("%Y%m%d%H",    rf"{re_year}{re_month}{re_day}{re_hour}"),
     ("%Y%m%d_%H%M", rf"{re_year}{re_month}{re_day}_{re_hour}{re_minute}"),
+    ("%Y_%m_%d_%H", rf"{re_year}_{re_month}_{re_day}_{re_hour}"),
     ("%Y-%m-%d.%H", rf"{re_year}-{re_month}-{re_day}.{re_hour}"),
     ("%Y%m%d-%H",   rf"{re_year}{re_month}{re_day}-{re_hour}"),
     ("%m%d%Y%H",    rf"{re_month}{re_day}{re_year}{re_hour}"), # matches xmrg0809202212z.grb
@@ -70,4 +71,35 @@ FIXTURE_INFO += [
     nbm_co_01h_fixture_info_factory("00", "006"),
     nbm_co_01h_fixture_info_factory("01", "001"),
 ]
+
+# append WRF Columbia
+# FIXTURE_INFO += [
+#         ("wrf-columbia", "wrf-columbia/DEWPNT_T.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/GROUND_T.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/LWDOWN__.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/PRECIPAH.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/PSTARCRS.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/RH______.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/SWDOWN__.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/T2______.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/U10_____.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/V10_____.nc", None, None),
+#         ("wrf-columbia", "wrf-columbia/VAPOR_PS.nc", None, None),
+#     ]
+
+# append WRF British Columbia
+# FIXTURE_INFO+=[
+#         ("wrf-bc", "wrf-bc/DEWPNT_T.nc", None, None),
+#         ("wrf-bc", "wrf-bc/GROUND_T.nc", None, None),
+#         ("wrf-bc", "wrf-bc/LWDOWN__.nc", None, None),
+#         ("wrf-bc", "wrf-bc/PRECIPAH.nc", None, None),
+#         ("wrf-bc", "wrf-bc/PSTARCRS.nc", None, None),
+#         ("wrf-bc", "wrf-bc/RH______.nc", None, None),
+#         ("wrf-bc", "wrf-bc/SWDOWN__.nc", None, None),
+#         ("wrf-bc", "wrf-bc/T2______.nc", None, None),
+#         ("wrf-bc", "wrf-bc/U10_____.nc", None, None),
+#         ("wrf-bc", "wrf-bc/V10_____.nc", None, None),
+#         ("wrf-bc", "wrf-bc/VAPOR_PS.nc", None, None),
+#     ]
+
 # fmt: on

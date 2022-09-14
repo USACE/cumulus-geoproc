@@ -60,6 +60,7 @@ def handle_message(geoprocess: str, GeoCfg: namedtuple, dst: str):
             proc_list = geo_proc(
                 plugin=GeoCfg.acquirable_slug,
                 src=src,
+                dst=dst,
                 acquirable=GeoCfg.acquirable_slug,
             )
 
