@@ -21,6 +21,7 @@ re_minute   = r"([0-5][0-9])"
 DATE_FORMATS = [
     ("%Y%m%d%H",    rf"{re_year}{re_month}{re_day}{re_hour}"),
     ("%Y%m%d_%H%M", rf"{re_year}{re_month}{re_day}_{re_hour}{re_minute}"),
+    ("%Y_%m_%d_%H", rf"{re_year}_{re_month}_{re_day}_{re_hour}"),
     ("%Y-%m-%d.%H", rf"{re_year}-{re_month}-{re_day}.{re_hour}"),
     ("%Y%m%d-%H",   rf"{re_year}{re_month}{re_day}-{re_hour}"),
     ("%m%d%Y%H",    rf"{re_month}{re_day}{re_year}{re_hour}"), # matches xmrg0809202212z.grb
