@@ -1,7 +1,7 @@
 """
 # California Nevada River Forecast Center
 
-## QPE 06 hour total precipitation
+## QPF 06 hour total precipitation
 """
 
 
@@ -17,6 +17,9 @@ from cumulus_geoproc import logger, utils
 from cumulus_geoproc.utils import cgdal
 
 gdal.UseExceptions()
+
+SUBSET_NAME = "T_SFC"
+SUBSET_DATATYPE = "32-bit floating-point"
 
 
 @pyplugs.register
@@ -75,19 +78,32 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             src_unzip = utils.decompress(src, str(dst_path))
             ds = gdal.Open(src_unzip)
 
-        dataset_meta = gdal.Info(ds, format="json")
-        bands = dataset_meta["bands"]
+        subdatasets = ds.GetSubDatasets()
 
-        for band in bands:
-            band_num = band["band"]
-            band_meta = band["metadata"][""]
+        for subdataset in subdatasets:
+            subsetpath, datatype = subdataset
+            if SUBSET_NAME in datatype and SUBSET_DATATYPE in datatype:
+                ds = gdal.Open(subsetpath)
+                break
+            else:
+                raise Exception(
+                    f"Did not find the sub-dataset we are lookingfor, {SUBSET_NAME} ({SUBSET_DATATYPE})"
+                )
 
-            # validTimes is a str with {} and can be eval() to set()
-            valid_times = eval(band_meta["validTimes"])
-            t1, t2 = valid_times
-            valid_datetime = datetime.fromtimestamp(t2).replace(tzinfo=timezone.utc)
+        # Get the subset metadata and the valid times as a list
+        sub_meta = ds.GetMetadata_Dict()
+        valid_times_list = list(eval(sub_meta[f"{SUBSET_NAME}#validTimes"]))
+        valid_times_list.sort()
 
-            raster_band = ds.GetRasterBand(band_num)
+        for i, t in enumerate(valid_times_list):
+            # skip the zero valid time
+            if i == 0:
+                continue
+
+            valid_datetime = datetime.fromtimestamp(t).replace(tzinfo=timezone.utc)
+
+            raster_band = ds.GetRasterBand(i)
+
             nodata = raster_band.GetNoDataValue()
 
             cgdal.gdal_translate_w_options(
@@ -97,7 +113,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     )
                 ),
                 ds,
-                bandList=[band_num],
+                bandList=[i],
                 noData=nodata,
             )
 
@@ -105,14 +121,14 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             if (validate := cgdal.validate_cog("-q", tif)) == 0:
                 logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
 
-            outfile_list = [
+            outfile_list.append(
                 {
                     "filetype": acquirable,
                     "file": tif,
                     "datetime": valid_datetime.isoformat(),
                     "version": None,
                 },
-            ]
+            )
 
     except (RuntimeError, KeyError, Exception) as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -132,4 +148,3 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         else:
             ds = None
     return outfile_list
-
