@@ -33,6 +33,8 @@ FIXTURE_INFO = [
     ("abrfc-qpe-01h", "abrfc-qpe-01h/abrfc_qpe_01hr_2022080816Z.nc", LIMITS["PRECIP_MIN"], LIMITS['PRECIP_MAX']),
     ("cbrfc-mpe", "cbrfc-mpe/xmrg0809202212z.grb", None, None),
     ("cnrfc-qpe-06h", "cnrfc-qpe-06h/qpe.20220803_1200.nc.gz", None, None),
+    ("cnrfc-qpf-06h", "cnrfc-qpe-06h/qpf.20221208_1200.nc.gz", None, None),
+    ("cnrfc-qtf-01h", "cnrfc-qpe-06h/fcstTemperature.20221208_0000.nc.gz", None, None),
     ("lmrfc-qpe-01h", "lmrfc-qpe-01h/2022080914z.grib.gz", None, None),
     ("lmrfc-qpf-06h", "lmrfc-qpf-06h/ORN_QPF_SFC_2022080912_234_2022081906f234.grb.gz", None, None),
     ("marfc-nbmt-01h", "marfc-nbmt-01h/RHA_T_NBM_9hr.2022-08-09.20z.grb", None, None),
