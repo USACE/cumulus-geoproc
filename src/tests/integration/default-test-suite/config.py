@@ -55,6 +55,7 @@ FIXTURE_INFO = [
     ("ncep-stage4-mosaic-24h", "ncep-stage4-mosaic-24h/st4_conus.2022080512.24h.grb2", None, None),
     ("ncrfc-mpe-01h", "ncrfc-mpe-01h/MSR_mpe-lx_2022080922z.grb", None, None),
     ("ncrfc-rtmat-01h", "ncrfc-rtmat-01h/msr-coe-1hrT--NCRFC_RTMA_Obs_1hrT_2022080921z.grb", None, None),
+    ("nohrsc-snodas-assimilated", "nohrsc-snodas-assimilated/assim_layers_2022010112.tar", None, None),
     ("nohrsc-snodas-unmasked", "nohrsc-snodas-unmasked/SNODAS_unmasked_20180115.tar", None, None),
     ("prism-ppt-early", "prism-ppt-early/PRISM_ppt_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-ppt-stable", "prism-ppt-stable/PRISM_ppt_stable_4kmD2_19810929_bil.zip", None, None),
