@@ -54,6 +54,7 @@ FIXTURE_INFO = [
     ("ncep-stage4-mosaic-06h", "ncep-stage4-mosaic-06h/st4_conus.2022080718.06h.grb2", None, None),
     ("ncep-stage4-mosaic-24h", "ncep-stage4-mosaic-24h/st4_conus.2022080512.24h.grb2", None, None),
     ("ncrfc-mpe-01h", "ncrfc-mpe-01h/MSR_mpe-lx_2022080922z.grb", None, None),
+    ("ncrfc-fmat-01h", "ncrfc-fmat-01h/msr-coe-1hrT--NCRFC_hourlyFcstT_2022022612.tar.gz", None, None),
     ("ncrfc-rtmat-01h", "ncrfc-rtmat-01h/msr-coe-1hrT--NCRFC_RTMA_Obs_1hrT_2022080921z.grb", None, None),
     ("nohrsc-snodas-assimilated", "nohrsc-snodas-assimilated/assim_layers_2022010112.tar", None, None),
     ("nohrsc-snodas-unmasked", "nohrsc-snodas-unmasked/SNODAS_unmasked_20180115.tar", None, None),
@@ -63,6 +64,8 @@ FIXTURE_INFO = [
     ("prism-tmax-stable", "prism-tmax-stable/PRISM_tmax_stable_4kmD2_19810929_bil.zip", None, None),
     ("prism-tmin-early", "prism-tmin-early/PRISM_tmin_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-tmin-stable", "prism-tmin-stable/PRISM_tmin_stable_4kmD2_19810929_bil.zip", None, None),
+    ("serfc-qpe-01h", "serfc-qpe-01h/xmrg0401202200z.grb.gz", None, None),
+    ("serfc-qpf-06h", "serfc-qpf-06h/ALR_QPF_SFC_2022040100_006.grb.gz", None, None),
     ("wpc-qpf-2p5km", "wpc-qpf-2p5km/p06m_2022080912f168.grb", None, None),
 ]
 
