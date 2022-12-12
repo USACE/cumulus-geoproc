@@ -50,7 +50,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     }
     ```
     """
-    is_vsi = False
     outfile_list = []
 
     try:
@@ -71,7 +70,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         try:
             ds = gdal.Open("/vsigzip/" + src)
-            is_vsi = True
         except RuntimeError as err:
             logger.warning(err)
             logger.warning(f'gunzip "{src}" and use as source file')
@@ -143,8 +141,5 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             logger.error(f"{k}: {v}")
 
     finally:
-        if is_vsi:
-            gdal.VSIFCloseL(ds)
-        else:
-            ds = None
+        ds = None
     return outfile_list
