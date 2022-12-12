@@ -1,7 +1,7 @@
 """
 # California Nevada River Forecast Center
 
-## QPF 06 hour total precipitation
+## QTF 01 hour air temperature forecast
 """
 
 
