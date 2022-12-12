@@ -61,8 +61,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         else:
             dst_path = Path(dst)
 
-        # change the suffix
-        filename_tif = src_path.with_suffix(".tif")
         if (
             len(src_path.suffixes) >= 2
         ):  # 2 or more suffixes assumes pattern like *.tar.gz, *.nc.gz, *.grb.gz, etc
@@ -106,9 +104,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
             cgdal.gdal_translate_w_options(
                 tif := str(
-                    dst_path.joinpath(
-                        filename_tif.with_stem(f"qpe.{valid_datetime.timestamp()}")
-                    )
+                    dst_path
+                    / f'qpe.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
                 ),
                 ds,
                 bandList=[i],
@@ -144,3 +141,11 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         ds = None
 
     return outfile_list
+
+
+if __name__ == "__main__":
+    print(
+        process(
+            src="/Users/rdcrljsg/projects/cumulus-geoproc/cumulus-geoproc-test-data/fixtures/cnrfc-nbm-qpf-06h/QPF.20220822_0700.nc.gz"
+        )
+    )
