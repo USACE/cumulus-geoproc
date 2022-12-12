@@ -61,13 +61,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         else:
             dst_path = Path(dst)
 
-        # change the suffix
-        filename_tif = src_path.with_suffix(".tif")
-        if (
-            len(src_path.suffixes) >= 2
-        ):  # 2 or more suffixes assumes pattern like *.tar.gz, *.nc.gz, *.grb.gz, etc
-            filename_tif = Path(src_path.stem).with_suffix(".tif")
-
         try:
             ds = gdal.Open("/vsigzip/" + src)
         except RuntimeError as err:
@@ -106,9 +99,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
             cgdal.gdal_translate_w_options(
                 tif := str(
-                    dst_path.joinpath(
-                        filename_tif.with_stem(f"qpe.{valid_datetime.timestamp()}")
-                    )
+                    dst_path / f'qtf.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
                 ),
                 ds,
                 bandList=[i],
