@@ -99,7 +99,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
             cgdal.gdal_translate_w_options(
                 tif := str(
-                    dst_path / f'qpe.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
+                    dst_path / f'qpf.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
                 ),
                 ds,
                 bandList=[i],
