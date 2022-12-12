@@ -89,11 +89,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             nodata = raster_band.GetNoDataValue()
 
             cgdal.gdal_translate_w_options(
-                tif := str(
-                    dst_path.joinpath(
-                        filename_tif.with_stem(f"qpe.{valid_datetime.timestamp()}")
-                    )
-                ),
+                tif := str(dst_path / filename_tif),
                 ds,
                 bandList=[band_num],
                 noData=nodata,
@@ -127,4 +123,3 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     finally:
         ds = None
     return outfile_list
-
