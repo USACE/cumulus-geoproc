@@ -141,11 +141,3 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         ds = None
 
     return outfile_list
-
-
-if __name__ == "__main__":
-    print(
-        process(
-            src="/Users/rdcrljsg/projects/cumulus-geoproc/cumulus-geoproc-test-data/fixtures/cnrfc-nbm-qpf-06h/QPF.20220822_0700.nc.gz"
-        )
-    )
