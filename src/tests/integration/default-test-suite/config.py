@@ -32,6 +32,7 @@ DATE_FORMATS = [
 FIXTURE_INFO = [
     ("abrfc-qpe-01h", "abrfc-qpe-01h/abrfc_qpe_01hr_2022080816Z.nc", LIMITS["PRECIP_MIN"], LIMITS['PRECIP_MAX']),
     ("cbrfc-mpe", "cbrfc-mpe/xmrg0809202212z.grb", None, None),
+    ("cnrfc-nbm-qpf-06h", "cnrfc-nbm-qpf-06h/QPF.20220822_0700.nc.gz", None, None),
     ("cnrfc-qpf-06h", "cnrfc-qpf-06h/qpf.20221201_1200.nc.gz", None, None),
     ("lmrfc-qpe-01h", "lmrfc-qpe-01h/2022080914z.grib.gz", None, None),
     ("lmrfc-qpf-06h", "lmrfc-qpf-06h/ORN_QPF_SFC_2022080912_234_2022081906f234.grb.gz", None, None),
