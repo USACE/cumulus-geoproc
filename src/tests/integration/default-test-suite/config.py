@@ -74,6 +74,7 @@ FIXTURE_INFO = [
     ("serfc-qpe-01h", "serfc-qpe-01h/xmrg0401202200z.grb.gz", None, None),
     ("serfc-qpf-06h", "serfc-qpf-06h/ALR_QPF_SFC_2022040100_006.grb.gz", None, None),
     ("wpc-qpf-2p5km", "wpc-qpf-2p5km/p06m_2022080912f168.grb", None, None),
+    ("nerfc-qpe-01h", "nerfc-qpe-01h/xmrg1207202215z.grb.gz", None, None),
 ]
 
 # Append dynamic nbm-co-01h fixtures
