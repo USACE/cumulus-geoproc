@@ -33,12 +33,12 @@ def processed():
 
 def test_infile_exists(processed) -> None:
     for p in processed:
-        assert os.path.isfile(p.infile), "Specified test file does not exist"
+        assert os.path.isfile(p.infile), f"Specified test file does not exist for {p.processor}: {p.infile}"
 
 
 def test_productfile_at_least_one(processed) -> None:
     for p in processed:
-        assert len(p.result) > 0, "Processor did not produce at least one productfile"
+        assert len(p.result) > 0, f"Processor did not produce at least one productfile for {p.processor}"
 
 
 def test_productfile_file_exists_on_disk(processed) -> None:
