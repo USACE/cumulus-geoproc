@@ -66,6 +66,7 @@ FIXTURE_INFO = [
     ("nerfc-qpe-01h", "nerfc-qpe-01h/xmrg1207202215z.grb.gz", None, None),
     ("nohrsc-snodas-assimilated", "nohrsc-snodas-assimilated/assim_layers_2022010112.tar", None, None),
     ("nohrsc-snodas-unmasked", "nohrsc-snodas-unmasked/SNODAS_unmasked_20180115.tar", None, None),
+    ("nwrfc-qpe-06h", "nwrfc-qpe-06h/QPE.2022121212.nc.gz", None, None),
     ("nwrfc-qpf-06h", "nwrfc-qpf-06h/QPF.2022121212.nc.gz", None, None),
     ("prism-ppt-early", "prism-ppt-early/PRISM_ppt_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-ppt-stable", "prism-ppt-stable/PRISM_ppt_stable_4kmD2_19810929_bil.zip", None, None),
