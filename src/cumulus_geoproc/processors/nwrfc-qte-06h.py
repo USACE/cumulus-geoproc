@@ -1,7 +1,7 @@
 """
 # Northwest River Forecast Center (NWRFC)
 
-## QPF 06 hour total precipitation
+## QTE 06 hour air temperature
 """
 
 
