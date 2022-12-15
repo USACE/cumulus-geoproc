@@ -88,13 +88,30 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         # find the minutes since
         time_units = ds.GetMetadataItem("time#units")
-        m = re.search("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", time_units)
-
-        if m:
-            since_time = datetime.fromisoformat(m[0]).replace(tzinfo=timezone.utc)
+        time_units_match = re.search(
+            "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", time_units
+        )
+        if time_units_match:
+            since_time = datetime.fromisoformat(time_units_match[0]).replace(
+                tzinfo=timezone.utc
+            )
         else:
             since_time = datetime(1970, 1, 1, 0, 0).replace(tzinfo=timezone.utc)
             logger.info(f"Assuming since time {since_time=}")
+
+        # get the version
+        date_created = ds.GetMetadataItem("NC_GLOBAL#date_created")
+        date_created_match = re.search(
+            "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", date_created
+        )
+        if date_created_match:
+            version_datetime = datetime.fromisoformat(date_created_match[0]).replace(
+                tzinfo=timezone.utc
+            )
+        else:
+            filename = src_path.name
+            date_str = re.search("\\d+", filename)[0]
+            version_datetime = datetime.strptime(date_str, "%Y%m%d%H")
 
         for band in range(1, ds.RasterCount + 1):
             raster = ds.GetRasterBand(band)
@@ -119,7 +136,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     "filetype": acquirable,
                     "file": tif,
                     "datetime": valid_datetime.isoformat(),
-                    "version": None,
+                    "version": version_datetime.isoformat(),
                 },
             )
 
