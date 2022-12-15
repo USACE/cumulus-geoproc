@@ -69,6 +69,7 @@ FIXTURE_INFO = [
     ("nwrfc-qpe-06h", "nwrfc-qpe-06h/QPE.2022121212.nc.gz", None, None),
     ("nwrfc-qpf-06h", "nwrfc-qpf-06h/QPF.2022121212.nc.gz", None, None),
     ("nwrfc-qtf-06h", "nwrfc-qtf-06h/QTF.2022121212.nc.gz", None, None),
+    ("nwrfc-qte-06h", "nwrfc-qte-06h/QTE.2022121212.nc.gz", None, None),
     ("prism-ppt-early", "prism-ppt-early/PRISM_ppt_early_4kmD2_20220808_bil.zip", None, None),
     ("prism-ppt-stable", "prism-ppt-stable/PRISM_ppt_stable_4kmD2_19810929_bil.zip", None, None),
     ("prism-tmax-early", "prism-tmax-early/PRISM_tmax_early_4kmD2_20220808_bil.zip", None, None),
