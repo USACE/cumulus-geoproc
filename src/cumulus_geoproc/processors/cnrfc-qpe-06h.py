@@ -14,7 +14,7 @@ import pyplugs
 from osgeo import gdal
 
 from cumulus_geoproc import logger, utils
-from cumulus_geoproc.utils import cgdal
+from cumulus_geoproc.utils import cgdal, hrap
 
 gdal.UseExceptions()
 
@@ -48,15 +48,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     ```
     """
     outfile_list = []
-
-    # projection
-    projection = "+proj=stere +lat_ts=60 +k_0=1 +long_0=-105 +R=6371200 +x_0=0.0 +y_0=0.0 +units=m"
-
-    # Specific to the HRAP Projection
-    # Given a coordinate in HRAP, calculate coordinate in Polar Stereographic
-    # REFERENCE: https://www.weather.gov/owp/oh_hrl_distmodel_hrap
-    ster_x = lambda hrap_x: hrap_x * 4762.5 - 401 * 4762.5
-    ster_y = lambda hrap_y: hrap_y * 4762.5 - 1601 * 4762.5
 
     try:
         # Source and Destination as Paths
@@ -103,13 +94,13 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         # lower left coordinates (minimum x, minimum y)
         lonLL, latLL = list(map(float, m["qpe_grid#latLonLL"].strip('{}').split(','))) # Lon/Lat
         hrap_xmin, hrap_ymin = list(map(float, m["qpe_grid#gridPointLL"].strip('{}').split(','))) # HRAP
-        ster_xmin, ster_ymin = ster_x(hrap_xmin), ster_y(hrap_ymin) # Polar Stereographic
+        ster_xmin, ster_ymin = hrap.ster_x(hrap_xmin), hrap.ster_y(hrap_ymin) # Polar Stereographic
 
         #
         # upper right coordinates (maximum x, maximum y) in geographic space and pixel space
         lonUR, latUR = list(map(float, m["qpe_grid#latLonUR"].strip('{}').split(','))) # Lon/Lat
         hrap_xmax, hrap_ymax = list(map(float, m["qpe_grid#gridPointUR"].strip('{}').split(','))) # HRAP
-        ster_xmax, ster_ymax = ster_x(hrap_xmax), ster_y(hrap_ymax) # Polar Stereographic
+        ster_xmax, ster_ymax = hrap.ster_x(hrap_xmax), hrap.ster_y(hrap_ymax) # Polar Stereographic
         #
         # size of the grid
         # nrows = number of rows in the grid (y or latitude direction)
@@ -131,7 +122,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         geotransform = (ster_xmin, xres, 0, ster_ymax, 0, -yres)
 
         ds.SetGeoTransform(geotransform)
-        ds.SetProjection(projection)
+        ds.SetProjection(hrap.PROJ4)
         
         bands = dataset_meta["bands"]
         for band in bands:
