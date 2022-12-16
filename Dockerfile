@@ -18,13 +18,6 @@ RUN mkdir /output
 RUN mkdir /src
 COPY src/ /src/
 
-# Test Data
-# TODO: Consider moving this to a location like "/cumulus-geoproc-test-data"
-#       where it can be referenced with a fully-qualified-pathname
-#       and can be cached as a docker build layer above copy of more frequently changing
-#       source code in /src
-COPY cumulus-geoproc-test-data/fixtures/ /src/tests/integration/fixtures/
-
 COPY ./entrypoint.sh /entrypoint.sh
 
 WORKDIR /src
