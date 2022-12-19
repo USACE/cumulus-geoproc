@@ -6,6 +6,7 @@
 
 
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -77,9 +78,26 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 ds = gdal.Open(subsetpath)
                 break
             else:
-                raise Exception(
-                    f"Did not find the sub-dataset we are lookingfor, {SUBSET_NAME} ({SUBSET_DATATYPE})"
-                )
+                ds = None
+
+        if ds is None:
+            raise Exception(
+                f"Did not find the sub-dataset we are lookingfor, {SUBSET_NAME} ({SUBSET_DATATYPE})"
+            )
+
+        # get the version
+        date_created = ds.GetMetadataItem("NC_GLOBAL#creationTime")
+        date_created_match = re.search("\\d+", date_created)
+        if date_created_match:
+            version_datetime = datetime.fromtimestamp(
+                int(date_created_match[0])
+            ).replace(tzinfo=timezone.utc)
+        else:
+            filename = src_path.name
+            date_str = re.search("\\d+_\\d+", filename)[0]
+            version_datetime = datetime.strptime(date_str, "%Y%m%d_%H%M").replace(
+                tzinfo=timezone.utc
+            )
 
         # Get the subset metadata and the valid times as a list
         sub_meta = ds.GetMetadata_Dict()
@@ -115,7 +133,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                     "filetype": acquirable,
                     "file": tif,
                     "datetime": valid_datetime.isoformat(),
-                    "version": None,
+                    "version": version_datetime.isoformat(),
                 },
             )
 
