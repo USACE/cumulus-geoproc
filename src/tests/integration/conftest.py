@@ -53,7 +53,6 @@ def tiff_files(tmpdir_factory):
     """
     return tmpdir_factory.mktemp("tiffs", numbered=True)
 
-
 def request_product(
     url: str, name_pattern: str, date_time: datetime = datetime.utcnow()
 ) -> str:

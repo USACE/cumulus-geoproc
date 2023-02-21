@@ -12,6 +12,7 @@ GTiff Creation Options to be a COG:
 ```
 """
 
+import json
 import os
 import pathlib
 import re
@@ -185,7 +186,7 @@ def find_band(data_set: "gdal.Dataset", attr: dict = {}, regex_enabled: bool = F
             raster = data_set.GetRasterBand(b)
             meta = raster.GetMetadata_Dict()
             for key, val in attr.items():
-                if (key in meta):
+                if key in meta:
                     # Many grib values include regex special characters. e.g. [C] (degrees celsius)
                     # Function escapes special characters by default to avoid breaking changes by introducing re.search().
                     # Escaping special characters by default will cause this helper function to behave the same way
@@ -206,6 +207,42 @@ def find_band(data_set: "gdal.Dataset", attr: dict = {}, regex_enabled: bool = F
             raster = None
 
     return None
+
+
+def band_from_json(info: json, attr: dict):
+    """band_from_json _summary_
+
+    Parameters
+    ----------
+    info : json
+        _description_
+    attr : dict
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+
+    bands = info["bands"]
+    for band in bands:
+        has_match = 0
+        meta = band["metadata"][""]
+        meta_keys = set(meta.keys())
+        attr_keys = set(attr.keys())
+        key_intersect = meta_keys.intersection(attr_keys)
+
+        if len(attr) == len(key_intersect):
+            for key in key_intersect:
+                search_pattern = attr[key]["description"]
+                if attr[key]["escaped"]:
+                    search_pattern = re.escape(search_pattern)
+                search_match = re.search(search_pattern, meta[key])
+                if search_match:
+                    has_match += 1
+            if len(attr) == has_match:
+                return band["band"]
 
 
 def gdal_calculate(*args):

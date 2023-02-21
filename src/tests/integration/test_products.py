@@ -34,19 +34,30 @@ def test_product_has_output(products, tiff_files):
         assert len(outputs) > 0, f"No output for {_path}"
 
 
-def test_correct_band(products):
+# def test_correct_band(products):
+#     for prod in products:
+#         _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"]).as_posix()
+#         if "attr" in prod:
+#             band_attrs = prod["attr"]
+#             dset = gdal.Open(_path)
+#             for band_num, band_attr in band_attrs.items():
+#                 band_found = cgdal.find_band(dset, band_attr)
+#                 assert band_found == int(
+#                     band_num
+#                 ), f"Band number {band_found} != {band_num} for {_path}"
+
+def test_correct_band2(products):
+    """Test the correct band can be selected"""
     for prod in products:
         _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"]).as_posix()
         if "attr" in prod:
             band_attrs = prod["attr"]
-            dset = gdal.Open(_path)
-            for band_num, band_attr in band_attrs.items():
-                band_found = cgdal.find_band(dset, band_attr)
+            json_info = gdal.Info(_path, format="json")
+            for band_num, band_meta in band_attrs.items():
+                band_found = cgdal.band_from_json(json_info, band_meta)
                 assert band_found == int(
                     band_num
                 ), f"Band number {band_found} != {band_num} for {_path}"
-            dset = None
-
 
 def test_product_exists():
     """Make sure the produced product exits"""
