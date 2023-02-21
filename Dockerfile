@@ -4,25 +4,27 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
 
 RUN apt-get update -y && apt-get install -y \
-  python3-pip \
+  python3-pip git \
   && rm -rf /var/lib/apt/lists/*
-
-# Install Pip Requirements
-COPY ./requirements*.txt /
-RUN pip3 install -r requirements-dev.txt
 
 # Output File Location
 RUN mkdir /output
 
 # Source Code Directory
-RUN mkdir /src
-COPY src/ /src/
+RUN mkdir /app
+
+WORKDIR /app
+
+COPY . /app/
+
+# Install Pip Requirements
+RUN pip3 install .
+RUN pip3 install -r requirements-dev.txt
 
 COPY ./entrypoint.sh /entrypoint.sh
 
-WORKDIR /src
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+# ENTRYPOINT [ "/entrypoint.sh" ]
 
 # For Testing; Keep Container Running to shell inside
 # ENTRYPOINT [ "/bin/sh", "-c", "while true; do sleep 2 && echo 'sleeping for 2 seconds'; done;" ]
