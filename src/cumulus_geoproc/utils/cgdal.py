@@ -209,7 +209,7 @@ def find_band(data_set: "gdal.Dataset", attr: dict = {}, regex_enabled: bool = F
     return None
 
 
-def band_from_json(info: json, attr: dict):
+def band_from_json(info: json, attr: dict, rex: bool = False):
     """band_from_json _summary_
 
     Parameters
@@ -235,8 +235,8 @@ def band_from_json(info: json, attr: dict):
 
         if len(attr) == len(key_intersect):
             for key in key_intersect:
-                search_pattern = attr[key]
-                search_match = re.search(search_pattern, meta[key])
+                search_pattern = attr[key] if rex else re.escape(attr[key])
+                search_match = re.match(search_pattern, meta[key])
                 if search_match:
                     has_match += 1
             if len(attr) == has_match:

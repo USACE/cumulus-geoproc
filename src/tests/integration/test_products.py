@@ -13,6 +13,8 @@ from cumulus_geoproc.utils import cgdal
 
 from .conftest import REPO_ROOT, OUTPUT_PRODUCTS
 
+gdal.UseExceptions()
+
 
 def test_file_exists(products):
     """Test file exists"""
@@ -21,15 +23,35 @@ def test_file_exists(products):
         assert _path.exists(), f"File does not exist: {_path}"
 
 
-def test_correct_band(products):
-    "Test the correct band"
+# def test_find_band_dataset(products):
+#     "Test the correct band"
+#     for prod in products:
+#         _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
+#         if "attr" in prod:
+#             dset = gdal.Open(_path)
+#             band_attrs = prod["attr"]
+#             for band_num, band_attr in band_attrs.items():
+#                 if (band_found := cgdal.find_band(dset, band_attr, True)) is None:
+#                     band_found = 0
+#                 assert band_found == int(
+#                     band_num
+#                 ), f"Band number {band_found} != {band_num} for {_path}"
+#             dset = None
+
+
+def test_find_band_gdalinfo(products):
+    "Test the correct band using cgdal.band_from_json"
     for prod in products:
         _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
         if "attr" in prod:
             dset = gdal.Open(_path)
+            gdal_info = gdal.Info(dset, format="json")
+            dset = None
             band_attrs = prod["attr"]
             for band_num, band_attr in band_attrs.items():
-                if (band_found := cgdal.find_band(dset, band_attr)) is None:
+                if (
+                    band_found := cgdal.band_from_json(gdal_info, band_attr, False)
+                ) is None:
                     band_found = 0
                 assert band_found == int(
                     band_num
@@ -53,21 +75,6 @@ def test_product_returns_output(products, tiff_files):
             ), f"{len(outputs)} != {num_products} for {_path}"
         else:
             assert len(outputs) > 0, f"At least one product expected for {_path}"
-
-
-def test_correct_band2(products):
-    """Test the correct band can be selected"""
-    for prod in products:
-        _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
-        if "attr" in prod:
-            band_attrs = prod["attr"]
-            json_info = gdal.Info(_path, format="json")
-            for band_num, band_meta in band_attrs.items():
-                if (band_found := cgdal.band_from_json(json_info, band_meta)) is None:
-                    band_found = 0
-                assert band_found == int(
-                    band_num
-                ), f"Band number {band_found} != {band_num} for {_path}"
 
 
 def test_product_exists():

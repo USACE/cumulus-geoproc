@@ -17,7 +17,7 @@ RUN mkdir /app
 
 COPY . /app/
 
-WORKDIR /app/cumulus-geoproc
+WORKDIR /app
 
 RUN curl -L https://github.com/USACE/cumulus-geoproc-test-data/releases/download/${TEST_DATA_TAG}/cumulus-geoproc-test-data.tar.gz \
     --output cumulus-geoproc-test-data.tar.gz && \
@@ -32,5 +32,3 @@ RUN pip3 install -r requirements-dev.txt
 COPY ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
-
-CMD ["-b"]
