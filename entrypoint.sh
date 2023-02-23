@@ -8,6 +8,6 @@ case "$1" in
         python3 -m pytest -v --html=/output/report.html --self-contained-html
         ;;
     *)
-        echo "'$1' Not an option"
+        echo "No option provided that can be used"
         ;;
 esac

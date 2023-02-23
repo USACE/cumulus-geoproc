@@ -11,9 +11,9 @@ from tempfile import NamedTemporaryFile
 import pytest
 import requests
 
-REPO_ROOT = Path(Path(__file__).parent.joinpath("../../../")).resolve()
+REPO_ROOT = Path(Path(__file__).parent.joinpath("../../")).resolve()
 GEOPROC_TEST_DATA = REPO_ROOT / "cumulus-geoproc-test-data/fixtures"
-TEST_PRODUCTS = Path(__file__).parent.joinpath("fixtures/test_products.json").resolve()
+TEST_PRODUCTS = Path(__file__).parent.joinpath("integration/fixtures/test_products.json").resolve()
 
 OUTPUT_PRODUCTS = []
 

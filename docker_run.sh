@@ -3,17 +3,15 @@
 
 usage(){ printf "\n$0 usage:\n\n" && grep " .*)\ #" $0; exit 0;}
 
-while getopts ":bhi" option; do
+while getopts ":hkt" option; do
     case ${option} in 
-        b) # Only build the container
-            BUILD=true
-            ;;
-        i) # Run the integration test
+        t) # Run the integration test
             CMD="itest"
             echo "Setting 'CMD' to '${CMD}'"
             ;;
         k) # Attach a volume for reporting output
             VOLUMES="-v $PWD/cumulus-geoproc-test-results:/output"
+            echo "Adding a volume: ${VOLUMES}"
             ;;
         h) # Print this message
             usage
@@ -33,6 +31,6 @@ then
 fi
 
 # Run container
-echo "docker run --rm ${VOLUMES} cumulus-geoproc-tests:latest ${CMD}"
-
-# docker run --rm ${VOLUMES} cumulus-geoproc-tests:latest ${CMD}
+docker run \
+    --rm ${VOLUMES} \
+    cumulus-geoproc-tests:latest ${CMD}

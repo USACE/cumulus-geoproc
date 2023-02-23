@@ -11,7 +11,7 @@ from osgeo import gdal
 from cumulus_geoproc.processors import geo_proc
 from cumulus_geoproc.utils import cgdal
 
-from .conftest import REPO_ROOT, OUTPUT_PRODUCTS
+from ..conftest import REPO_ROOT, OUTPUT_PRODUCTS
 
 gdal.UseExceptions()
 

@@ -3,6 +3,7 @@ FROM osgeo/gdal:ubuntu-full-3.5.0
 ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
 
+# env var for test data version to use, which should always be the most up to date
 ENV TEST_DATA_TAG=2023-02-22
 
 RUN apt-get update -y && \
@@ -19,10 +20,11 @@ COPY . /app/
 
 WORKDIR /app
 
+# Get the test data before testing it
 RUN curl -L https://github.com/USACE/cumulus-geoproc-test-data/releases/download/${TEST_DATA_TAG}/cumulus-geoproc-test-data.tar.gz \
     --output cumulus-geoproc-test-data.tar.gz && \
-    tar -xzvf cumulus-geoproc-test-data.tar.gz
-
+    tar -xzvf cumulus-geoproc-test-data.tar.gz && \
+    rm -f cumulus-geoproc-test-data.tar.gz
 
 # Install Pip Requirements
 # This first install is the cumulus-geoproc package

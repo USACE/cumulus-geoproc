@@ -2,16 +2,20 @@
 
 Python package implementation to process incoming grids to Cloud Optimized GeoTIFF (COG)
 
-### Iterative Development and Testing With Docker
+## Geo Processor Development and Testing
 
-The script `tests.sh` in the root of this repository copies the python code in `/src` into a docker container and runs all tests in the src/tests directory by default. The script supports the option `-k`, which will bind mount the directory cumulus-geoproc-test-results in this repository to the container directory `/output` at runtime. As a result, all output files from running unittest tests will be written to this directory and will be available for local manual evaluation and debugging.
+### Development
 
-By default, `./tests.sh` runs the full unittest test suite. However, it is helpful during iterative development of a new processors to limit the number of tests that are run for faster feedback. This can be done by uncommenting and modifying the last line of the `Dockerfile` and commenting-out the default CMD. The workflow of commenting/uncommenting lines in the Dockerfile may be improved in the future.
+...
 
-```
-# Run all tests
-CMD ["python3", "-m", "unittest", "discover", "-v", "tests"]
+### Testing
 
-# Run a single test (helpful for developing new processors)
-# CMD ["python3", "-m", "unittest", "-v", "tests/integration/test_one_thing.py"]
-```
+#### VS Code Developement Container
+
+A VS Code development container configuration is provided to assist in processor and test development.  See [Create a Dev Container](https://code.visualstudio.com/docs/devcontainers/create-dev-container) to use a Docker container as a full-featured development environment.  A `devcontainer.json` configuration is provided already for development.
+
+#### Testing the Processors
+
+A shell script (`docker_run.sh`) is provided to build and run the docker container and run all tests.  The current shell script provides options to test (-t) and/or bind a volume to return a `Pytest` report (-k).  
+
+
