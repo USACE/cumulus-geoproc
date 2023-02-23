@@ -11,53 +11,64 @@ from osgeo import gdal
 from cumulus_geoproc.processors import geo_proc
 from cumulus_geoproc.utils import cgdal
 
-from .conftest import LOCAL_TEST_PRODUCTS, OUTPUT_PRODUCTS
+from .conftest import REPO_ROOT, OUTPUT_PRODUCTS
 
 
 def test_file_exists(products):
     """Test file exists"""
     for prod in products:
-        _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"])
+        _path = REPO_ROOT.joinpath(prod["local_source"])
         assert _path.exists(), f"File does not exist: {_path}"
 
 
-def test_product_has_output(products, tiff_files):
+def test_correct_band(products):
+    "Test the correct band"
+    for prod in products:
+        _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
+        if "attr" in prod:
+            dset = gdal.Open(_path)
+            band_attrs = prod["attr"]
+            for band_num, band_attr in band_attrs.items():
+                if (band_found := cgdal.find_band(dset, band_attr)) is None:
+                    band_found = 0
+                assert band_found == int(
+                    band_num
+                ), f"Band number {band_found} != {band_num} for {_path}"
+
+
+def test_product_returns_output(products, tiff_files):
     """Test product produces at least one output"""
     for prod in products:
-        _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"]).as_posix()
+        _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
         outputs = geo_proc(
             plugin=prod["plugin"],
             src=_path,
             dst=str(tiff_files),
         )
         OUTPUT_PRODUCTS.append(outputs)
-        assert len(outputs) > 0, f"No output for {_path}"
+        if "products" in prod.keys():
+            num_products = prod["products"]
+            assert (
+                len(outputs) == num_products
+            ), f"{len(outputs)} != {num_products} for {_path}"
+        else:
+            assert len(outputs) > 0, f"At least one product expected for {_path}"
 
-
-# def test_correct_band(products):
-#     for prod in products:
-#         _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"]).as_posix()
-#         if "attr" in prod:
-#             band_attrs = prod["attr"]
-#             dset = gdal.Open(_path)
-#             for band_num, band_attr in band_attrs.items():
-#                 band_found = cgdal.find_band(dset, band_attr)
-#                 assert band_found == int(
-#                     band_num
-#                 ), f"Band number {band_found} != {band_num} for {_path}"
 
 def test_correct_band2(products):
     """Test the correct band can be selected"""
     for prod in products:
-        _path = LOCAL_TEST_PRODUCTS.joinpath(prod["local_source"]).as_posix()
+        _path = REPO_ROOT.joinpath(prod["local_source"]).as_posix()
         if "attr" in prod:
             band_attrs = prod["attr"]
             json_info = gdal.Info(_path, format="json")
             for band_num, band_meta in band_attrs.items():
-                band_found = cgdal.band_from_json(json_info, band_meta)
+                if (band_found := cgdal.band_from_json(json_info, band_meta)) is None:
+                    band_found = 0
                 assert band_found == int(
                     band_num
                 ), f"Band number {band_found} != {band_num} for {_path}"
+
 
 def test_product_exists():
     """Make sure the produced product exits"""
@@ -70,24 +81,17 @@ def test_product_exists():
 def test_product_version(products):
     """Test the version is assign correctly for the type, observed or forcaste"""
     for i, prod in enumerate(products):
-        vtype = prod["vtype"]
+        versioned = prod["versioned"]
         prods = OUTPUT_PRODUCTS[i]
         for prod in prods:
-            if vtype == "observed":
-                assert (
-                    prod["version"] is None
-                ), f"Version has a date and should be None: {prod}"
-            elif vtype == "forecast":
+            if versioned:
                 assert (
                     prod["version"] is not None
                 ), f"Version is None and needs a date: {prod}"
             else:
                 assert (
-                    vtype != "observed"
-                ), f"Version type not correctly defined as {vtype}"
-                assert (
-                    vtype != "forecast"
-                ), f"Version type not correctly defined as {vtype}"
+                    prod["version"] is None
+                ), f"Version has a date and should be None: {prod}"
 
 
 def test_product_datetime():
@@ -143,11 +147,3 @@ def test_cog_unique():
         assert len(all_dgst) == len(
             set(all_dgst)
         ), f"Not all products unique in {prods}"
-
-
-# def test_teardown():
-#     """Teardown the files created"""
-#     for prods in OUTPUT_PRODUCTS:
-#         for prod in prods:
-#             _path = Path(prod["file"])
-#             _path.unlink(True)

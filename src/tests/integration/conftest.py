@@ -2,7 +2,7 @@
 Integration test methods to support testing
 """
 
-
+import os
 import json
 from datetime import datetime
 from pathlib import Path
@@ -11,30 +11,52 @@ from tempfile import NamedTemporaryFile
 import pytest
 import requests
 
-LOCAL_TEST_PRODUCTS = Path(Path(__file__).parent.joinpath("../../../")).resolve()
+REPO_ROOT = Path(Path(__file__).parent.joinpath("../../../")).resolve()
+GEOPROC_TEST_DATA = REPO_ROOT / "cumulus-geoproc-test-data/fixtures"
 TEST_PRODUCTS = Path(__file__).parent.joinpath("fixtures/test_products.json").resolve()
 
 OUTPUT_PRODUCTS = []
 
 
 @pytest.fixture(scope="module")
-def products(fqpn: Path = TEST_PRODUCTS) -> list:
-    """products
-
-    Parameters
-    ----------
-    fqpn : Path, optional
-        path to json file, by default TEST_PRODUCTS
+def products() -> list:
+    """gen_product_list provides dynamic fixture based on the test products
 
     Returns
     -------
     list
-        list of objects defining a product
+        json objects defining the test product attributes
     """
-    with fqpn.open("r", encoding="utf-8") as fpt:
-        _products = json.loads(fpt.read())
+    _products = []
+    for dirname, _, filenames in os.walk(GEOPROC_TEST_DATA):
+        for filename in filenames:
+            if filename.endswith(".json"):
+                filepath = Path(dirname).joinpath(filename)
+                with filepath.open("r", encoding="utf-8") as fptr:
+                    obj = json.loads(fptr.read())
+                    _products.append(obj)
 
     return _products
+
+
+# @pytest.fixture(scope="module")
+# def products(fqpn: Path = TEST_PRODUCTS) -> list:
+#     """products
+
+#     Parameters
+#     ----------
+#     fqpn : Path, optional
+#         path to json file, by default TEST_PRODUCTS
+
+#     Returns
+#     -------
+#     list
+#         list of objects defining a product
+#     """
+#     with fqpn.open("r", encoding="utf-8") as fpt:
+#         _products = json.loads(fpt.read())
+
+#     return _products
 
 
 @pytest.fixture(scope="session")
@@ -52,6 +74,7 @@ def tiff_files(tmpdir_factory):
         path object
     """
     return tmpdir_factory.mktemp("tiffs", numbered=True)
+
 
 def request_product(
     url: str, name_pattern: str, date_time: datetime = datetime.utcnow()

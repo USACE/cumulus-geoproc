@@ -235,9 +235,7 @@ def band_from_json(info: json, attr: dict):
 
         if len(attr) == len(key_intersect):
             for key in key_intersect:
-                search_pattern = attr[key]["description"]
-                if attr[key]["escaped"]:
-                    search_pattern = re.escape(search_pattern)
+                search_pattern = attr[key]
                 search_match = re.search(search_pattern, meta[key])
                 if search_match:
                     has_match += 1
