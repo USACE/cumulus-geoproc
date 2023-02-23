@@ -3,9 +3,6 @@
 # set -x
 
 case "$1" in
-    build)
-        echo "Build testing container"
-        ;;
     itest)
         echo "Pytest"
         python3 -m pytest -v --html=/output/report.html --self-contained-html
