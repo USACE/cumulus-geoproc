@@ -3,8 +3,13 @@
 
 usage(){ printf "\n$0 usage:\n\n" && grep " .*)\ #" $0; exit 0;}
 
-while getopts ":hkt" option; do
+BUILD=false
+
+while getopts ":bhkt" option; do
     case ${option} in 
+        b) # Build the docker image
+            BUILD=true
+            ;;
         t) # Run the integration test
             CMD="itest"
             echo "Setting 'CMD' to '${CMD}'"
