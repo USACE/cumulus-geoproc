@@ -12,8 +12,10 @@ import pytest
 import requests
 
 REPO_ROOT = Path(Path(__file__).parent.joinpath("../../")).resolve()
-GEOPROC_TEST_DATA = REPO_ROOT / "cumulus-geoproc-test-data/fixtures"
-TEST_PRODUCTS = Path(__file__).parent.joinpath("integration/fixtures/test_products.json").resolve()
+GEOPROC_TEST_DATA = REPO_ROOT / "fixtures"
+TEST_PRODUCTS = (
+    Path(__file__).parent.joinpath("integration/fixtures/test_products.json").resolve()
+)
 
 OUTPUT_PRODUCTS = []
 
@@ -33,8 +35,10 @@ def products() -> list:
             if filename.endswith(".json"):
                 filepath = Path(dirname).joinpath(filename)
                 with filepath.open("r", encoding="utf-8") as fptr:
-                    obj = json.loads(fptr.read())
-                    _products.append(obj)
+                    objs = json.load(fptr)
+                    if isinstance(objs, list):
+                        for obj in objs:
+                            _products.append(obj)
 
     return _products
 

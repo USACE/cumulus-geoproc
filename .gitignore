@@ -6,9 +6,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Test data tar gz
-**/cumulus-geoproc-test-data/
-*.tar.gz
+# Test data fixtures
+**/fixtures/
 
 # C extensions
 *.so
