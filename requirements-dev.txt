@@ -1,5 +1,4 @@
-# Base requirements
--r requirements.txt
-# Additional development requirements
 pytest
 pytest-html
+pylance
+black

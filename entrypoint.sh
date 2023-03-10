@@ -2,8 +2,12 @@
 
 # set -x
 
-# run the testing
-# coverage run --source=. -m unittest "$*"
-python3 -m pytest -v --html=/output/report.html --self-contained-html "$*"
-# run the coverage report
-# coverage report -m
+case "$1" in
+    itest)
+        echo "Pytest"
+        python3 -m pytest -v --html=/output/report.html --self-contained-html
+        ;;
+    *)
+        echo "No option provided that can be used"
+        ;;
+esac
