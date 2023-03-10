@@ -43,26 +43,6 @@ def products() -> list:
     return _products
 
 
-# @pytest.fixture(scope="module")
-# def products(fqpn: Path = TEST_PRODUCTS) -> list:
-#     """products
-
-#     Parameters
-#     ----------
-#     fqpn : Path, optional
-#         path to json file, by default TEST_PRODUCTS
-
-#     Returns
-#     -------
-#     list
-#         list of objects defining a product
-#     """
-#     with fqpn.open("r", encoding="utf-8") as fpt:
-#         _products = json.loads(fpt.read())
-
-#     return _products
-
-
 @pytest.fixture(scope="session")
 def tiff_files(tmpdir_factory):
     """tiff_files

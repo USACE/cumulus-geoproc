@@ -15,15 +15,16 @@ while getopts ":bhkt" option; do
             echo "Setting 'CMD' to '${CMD}'"
             ;;
         k) # Attach a volume for reporting output
-            VOLUMES="-v $PWD/cumulus-geoproc-test-results:/output"
+            VOLUMES="-v $PWD/cumulus-geoproc-test-results:/tmp/pytest-of-root/pytest-current/tiffscurrent"
             echo "Adding a volume: ${VOLUMES}"
             ;;
         h) # Print this message
             usage
             exit 1
             ;;
-        *) # Print usage"
+        *) # Print this message
             usage
+            exit 1
             ;;
     esac
 done
