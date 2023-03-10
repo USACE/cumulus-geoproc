@@ -1,17 +1,14 @@
-name: tests-all
+name: Test Products
 
 on:
-  push:
-    branches: ['main']
   pull_request:
-    branches: ['main']
+    branches: ["main"]
 
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: tests
-        run: ./tests.sh
+
+      - name: Run Tests
+        run: ./docker_run.sh -tbk
