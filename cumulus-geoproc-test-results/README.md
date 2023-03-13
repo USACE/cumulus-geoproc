@@ -1,5 +1,5 @@
-## Output Files From `python -m unittest`
+# Cumulus-GeoProc Processor Testing
 
-This directory is mounted at `/output` inside the container when running `tests.sh` with the `-k` option ("keep" mode). This is helpful for keeping output files produced by unittest tests for additional evaluation and debugging.
+# Test Fixture: Pytest
 
-All contents in this directory are .gitignored, except for this file (README.md)
+[`pytest`](https://docs.pytest.org) is the Python testing tool used to test processors against their respective product files.  Results are compiled in a HTML report saved in this directory.  The tests are executed by the `docker_run.sh` shell script with arguments `-t`, `-b`, and/or `-k`.  It is recommended to allways build `(-b)` the docker image each run.  Testing is performed when `-t` is used and report output is kept with `-k`.
