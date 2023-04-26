@@ -69,6 +69,16 @@ def gdal_translate_w_options(
         Dataset object or a filename
     **kwargs
         User defined keyword arguments
+
+        Default base kwargs:
+
+            "format": "COG",
+            "bandList": [1],
+            "creationOptions":[
+                "RESAMPLING=BILINEAR",
+                "OVERVIEWS=IGNORE_EXISTING",
+                "OVERVIEW_RESAMPLING=BILINEAR",
+                ]
     """
     base = {
         "format": "COG",
