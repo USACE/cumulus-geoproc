@@ -1,38 +1,17 @@
 """
 # Arkansas-Red Basin River Forecast Center
 
-## File Type
-
-File type is netCDF-3 (version 3).  GDAL does `NOT` show any bands available
-when viewing metadata (gdalinfo -json *netCDF_file*); therefore Python package
-`netCDF4` is used to process these products.
-
 """
 
 
-import os
-import time
+from pathlib import Path
+import sys
 from datetime import datetime, timedelta, timezone
-from string import Template
 
-import numpy
 import pyplugs
 from cumulus_geoproc import logger
 from cumulus_geoproc.utils import cgdal
-from netCDF4 import Dataset
 from osgeo import gdal
-
-this = os.path.basename(__file__)
-
-UNIX_EPOCH = datetime(
-    time.gmtime(0).tm_year,
-    time.gmtime(0).tm_mon,
-    time.gmtime(0).tm_mday,
-    time.gmtime(0).tm_hour,
-    time.gmtime(0).tm_min,
-    time.gmtime(0).tm_sec,
-)
-"""datetime: UNIX_EPOCH is the uniform date for the start of time"""
 
 
 @pyplugs.register
@@ -65,105 +44,54 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
     outfile_list = []
 
-    proj4_template = Template(
-        "+proj=stere +lat_ts=${lat_ts}"
-        " +k_0=${k_0}"
-        " +long_0=${long_0}"
-        " +R=${radius}"
-        " +x_0=0.0"
-        " +y_0=0.0"
-        " +units=m"
-    )
-
-    filename = os.path.basename(src)
-
-    # Take the source path as the destination unless defined.
-    # User defined `dst` not programatically removed unless under
-    # source's temporary directory.
     if dst is None:
-        dst = os.path.dirname(src)
+        dst = Path(src).parent
 
     try:
-        with Dataset(src, "r") as ncds:
-            # Determine time dependencies
+        data_set = gdal.Open(src)
 
-            nctime = ncds.variables["time"][:]
-            dt_int32 = int(nctime.data[0])
-            dt_valid = (UNIX_EPOCH + timedelta(hours=dt_int32)).replace(
-                tzinfo=timezone.utc
-            )
+        for subdata_set in data_set.GetSubDatasets():
+            nc_path, _ = subdata_set
+            _, _, nc_variable = nc_path.split(":")
+            if "time" in nc_variable.lower():
+                data_set = gdal.Open(nc_path)
+                _, _, time_units = data_set.GetMetadataItem("time#units").split()
+                since_time = datetime.strptime(
+                    time_units, "%Y-%m-%dT%H:%M:%SZ"
+                ).replace(tzinfo=timezone.utc)
+                bounds_time = data_set.ReadAsArray()[-1]
+                valid_time = since_time + timedelta(hours=float(bounds_time[-1]))
 
-            lat = ncds.variables["y"][:]
-            lon = ncds.variables["x"][:]
-            xmin, ymin, xmax, ymax = lon.min(), lat.min(), lon.max(), lat.max()
+            if "precipitation" in nc_variable.lower():
+                tif = Path(dst).joinpath(Path(src).name).with_suffix(".tif").as_posix()
+                cgdal.gdal_translate_w_options(
+                    tif,
+                    data_set := gdal.Open(nc_path, gdal.GA_ReadOnly),
+                )
 
-            ncvar = ncds.variables["Total_precipitation"]
-            nodata = ncvar.missing_value
-
-            _, nrows, ncols = ncvar.shape
-
-            xres = (xmax - xmin) / float(ncols)
-            yres = (ymax - ymin) / float(nrows)
-
-            geotransform = (xmin, xres, 0, ymax, 0, -yres)
-
-            # Create a raster, set attributes, and define the spatial reference
-            projection = ncds.variables["Polar_Stereographic"]
-
-            proj4 = proj4_template.substitute(
-                lat_ts=projection.latitude_of_projection_origin,
-                k_0=projection.scale_factor_at_projection_origin,
-                long_0=projection.longitude_of_projection_origin,
-                radius=projection.earth_radius,
-            )
-
-            raster = gdal.GetDriverByName("GTiff").Create(
-                tmptif := "/vsimem/{filename}-tmp.tif",
-                xsize=ncols,
-                ysize=nrows,
-                eType=gdal.GDT_Float32,
-            )
-
-            raster.SetGeoTransform(geotransform)
-            raster.SetProjection(proj4)
-
-            # Reference the following for reason to flip
-            # https://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg03585.html
-            # Basically, get the array sequence like other Tiffs
-            data_masked = ncvar[:]
-            data_ndarray = data_masked.data
-            data_squeeze = numpy.squeeze(data_ndarray)
-            data = numpy.flipud(data_squeeze)
-
-            band = raster.GetRasterBand(1)
-            band.WriteArray(data)
-
-            raster.FlushCache()
-            raster = None
-
-            cgdal.gdal_translate_w_options(
-                tif := os.path.join(dst, f"{filename}.tif"),
-                tmptif,
-                outputBounds=[ncds.lon00, ncds.latNxNy, ncds.lonNxNy, ncds.lat00],
-                outputSRS="EPSG:4326",
-                noData=nodata,
-            )
-
-            # validate COG
-            if (validate := cgdal.validate_cog("-q", tif)) == 0:
-                logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
-
+        if tif:
             outfile_list.append(
                 {
                     "filetype": acquirable,
                     "file": tif,
-                    "datetime": dt_valid.isoformat(),
+                    "datetime": valid_time.isoformat(),
                     "version": None,
                 }
             )
-    except (RuntimeError, KeyError, Exception) as ex:
-        logger.error(f"{type(ex).__name__}: {this}: {ex}")
+
+    except RuntimeError:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback_details = {
+            "filename": Path(exc_traceback.tb_frame.f_code.co_filename).name,
+            "line number": exc_traceback.tb_lineno,
+            "method": exc_traceback.tb_frame.f_code.co_name,
+            "type": exc_type.__name__,
+            "message": exc_value,
+        }
+        for k, v in traceback_details.items():
+            logger.error("{%s}: {%s}".format(k, v))
+        return outfile_list
     finally:
-        raster = None
+        data_set = None
 
     return outfile_list
