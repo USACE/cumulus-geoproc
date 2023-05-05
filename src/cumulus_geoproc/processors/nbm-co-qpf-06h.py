@@ -50,11 +50,9 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     outfile_list = []
 
     filetype_elements = {
-        "airtemp": {
-            "GRIB_COMMENT": "Temperature \\[C\\]",
-            "GRIB_ELEMENT": "^T$",
-            "GRIB_SHORT_NAME": "2\\-HTGL",
-            "GRIB_UNIT": "\\[C\\]",
+        "qpf": {
+            "GRIB_ELEMENT": "QPF06",
+            "GRIB_SHORT_NAME": "0\\-SFC",
         }
     }
 

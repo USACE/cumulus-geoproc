@@ -67,10 +67,11 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             dst = os.path.dirname(src)
 
         ds = gdal.Open(src)
+        gdal_info = gdal.Info(ds, format="json")
 
         for param, attr in filetype_elements.items():
             try:
-                if (band_number := cgdal.find_band(ds, attr, True)) is None:
+                if (band_number := cgdal.band_from_json(gdal_info, attr, True)) is None:
                     raise Exception("Band number not found for attributes: {attr}")
 
                 logger.debug(f"Band number '{band_number}' found for attributes {attr}")
