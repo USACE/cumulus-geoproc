@@ -439,7 +439,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
 }
 </script>
     <h1>index.html</h1>
-    <p>Report generated on 05-May-2023 at 17:14:44 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
+    <p>Report generated on 05-May-2023 at 19:22:38 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -455,7 +455,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <td>Python</td>
         <td>3.8.10</td></tr></table>
     <h2>Summary</h2>
-    <p>16 tests ran in 7.96 seconds. </p>
+    <p>16 tests ran in 122.61 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">16 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -471,7 +471,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_file_exists</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.16</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -480,7 +480,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_find_band_gdalinfo</td>
-          <td class="col-duration">0.59</td>
+          <td class="col-duration">2.51</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -489,16 +489,52 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_product_returns_output</td>
-          <td class="col-duration">6.60</td>
+          <td class="col-duration">115.78</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
-            <div class="empty log">No log output captured.</div></td></tr></tbody>
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QPE.2022121212.nc&quot;:z [550x679] z (64-bit floating-point)
+NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QPE.2022121212.nc&quot;:QPE [4x550x679] QPE (32-bit floating-point)
+NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QPF.2022121212.nc&quot;:z [550x679] z (64-bit floating-point)
+NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QPF.2022121212.nc&quot;:QPF [40x550x679] QPF (32-bit floating-point)
+NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QTE.2022121212.nc&quot;:z [550x679] z (64-bit floating-point)
+NETCDF:&quot;/tmp/pytest-of-root/pytest-6/tiffs0/QTE.2022121212.nc&quot;:QTE [4x550x679] QTE (32-bit floating-point)
+<br/> ------------------------------Captured stderr call------------------------------ <br/>Warning 1: dimension #1 (time_bounds) is not a Longitude/X dimension.
+Warning 1: dimension #0 (time) is not a Latitude/Y dimension.
+[2023-05-05T19:20:40.151] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:20:40.152] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/cnrfc-nbm-qpf-06h/QPF.20220822_0700.nc.gz&quot; and use as source file
+Warning 1: No 1D variable is indexed by dimension DIM_44
+Warning 1: VSIFSeekL(xxx, SEEK_END) may be really slow on GZip streams.
+[2023-05-05T19:20:40.997] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:20:40.997] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/cnrfc-nbm-qtf-01h/fcstTemperature.20221208_0700.nc.gz&quot; and use as source file
+Warning 1: No 1D variable is indexed by dimension DIM_264
+[2023-05-05T19:20:45.045] {cumulus_geoproc:process} - WARNING - `/vsigzip//workspaces/cumulus-geoproc/fixtures/cnrfc-qpe-06h/qpe.20220803_1200.nc.gz&#x27; not recognized as a supported file format.
+[2023-05-05T19:20:45.045] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/cnrfc-qpe-06h/qpe.20220803_1200.nc.gz&quot; and use as source file
+Warning 1: No 1D variable is indexed by dimension dimp
+[2023-05-05T19:20:45.100] {cumulus_geoproc:process} - WARNING - `/vsigzip//workspaces/cumulus-geoproc/fixtures/cnrfc-qpf-06h/qpf.20221201_1200.nc.gz&#x27; not recognized as a supported file format.
+[2023-05-05T19:20:45.100] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/cnrfc-qpf-06h/qpf.20221201_1200.nc.gz&quot; and use as source file
+Warning 1: No 1D variable is indexed by dimension DIM_24
+[2023-05-05T19:20:45.478] {cumulus_geoproc:process} - WARNING - `/vsigzip//workspaces/cumulus-geoproc/fixtures/cnrfc-qpf-06h/qpf.20221208_1200.nc.gz&#x27; not recognized as a supported file format.
+[2023-05-05T19:20:45.478] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/cnrfc-qpf-06h/qpf.20221208_1200.nc.gz&quot; and use as source file
+Warning 1: No 1D variable is indexed by dimension DIM_24
+[2023-05-05T19:20:45.899] {cumulus_geoproc:process} - ERROR - Exception: hrrr-total-precip.py: Band number not found for attributes: {&#x27;GRIB_ELEMENT&#x27;: &#x27;APCP01&#x27;, &#x27;GRIB_COMMENT&#x27;: &#x27;precipitation&#x27;, &#x27;GRIB_UNIT&#x27;: &#x27;[kg/(m^2)]&#x27;}
+[2023-05-05T19:20:55.225] {cumulus_geoproc:process} - ERROR - RuntimeError: nbm-co-qpf-06h.py: `/workspaces/cumulus-geoproc/fixtures/nbm-conus/blend.t00z.core.f205.co.grib2&#x27; not recognized as a supported file format.
+[2023-05-05T19:20:56.829] {cumulus_geoproc:process} - ERROR - RuntimeError: nbm-co-qtf-03h.py: `/workspaces/cumulus-geoproc/fixtures/nbm-conus/blend.t00z.core.f100.co.grib2&#x27; not recognized as a supported file format.
+[2023-05-05T19:20:56.837] {cumulus_geoproc:process} - ERROR - RuntimeError: nbm-co-qtf-06h.py: `/workspaces/cumulus-geoproc/fixtures/nbm-conus/blend.t00z.core.f205.co.grib2&#x27; not recognized as a supported file format.
+[2023-05-05T19:22:25.838] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:22:25.838] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/nwrfc-qpe-06h/QPE.2022121212.nc.gz&quot; and use as source file
+[2023-05-05T19:22:26.341] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:22:26.342] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/nwrfc-qpf-06h/QPF.2022121212.nc.gz&quot; and use as source file
+[2023-05-05T19:22:28.695] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:22:28.696] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/nwrfc-qte-06h/QTE.2022121212.nc.gz&quot; and use as source file
+[2023-05-05T19:22:29.737] {cumulus_geoproc:process} - WARNING - CPLCreateUserFaultMapping(): syscall(__NR_userfaultfd) failed: insufficient permission. add CAP_SYS_PTRACE capability, or set /proc/sys/vm/unprivileged_userfaultfd to 1
+[2023-05-05T19:22:29.737] {cumulus_geoproc:process} - WARNING - gunzip &quot;/workspaces/cumulus-geoproc/fixtures/nwrfc-qtf-06h/QTF.2022121212.nc.gz&quot; and use as source file
+<br/></div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_product_exists</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -543,7 +579,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_cog_valid</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">1.26</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -552,7 +588,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/integration/test_products.py::test_cog_unique</td>
-          <td class="col-duration">0.06</td>
+          <td class="col-duration">1.44</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
@@ -561,7 +597,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <tr>
           <td class="col-result">Passed</td>
           <td class="col-name">src/tests/unit/test_finding_bands.py::test_cgdal_find_hrrr_precip</td>
-          <td class="col-duration">0.00</td>
+          <td class="col-duration">0.01</td>
           <td class="col-links"></td></tr>
         <tr>
           <td class="extra" colspan="4">
