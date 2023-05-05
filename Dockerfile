@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
 
 # env var for test data version to use, which should always be the most up to date
-ENV TEST_DATA_TAG=2023-03-10
+ENV TEST_DATA_TAG=2023-05-05
 
 RUN apt-get update -y && \
     apt-get install -y python3-pip curl && \
