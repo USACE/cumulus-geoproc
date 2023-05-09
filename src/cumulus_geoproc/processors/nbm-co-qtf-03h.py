@@ -81,8 +81,10 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
 
         filename_parts = filename.split(".")
-        filename_parts.insert(1, dt_valid.strftime("%Y%m%d"))
-        filename_dst = Path(dst).joinpath(".".join(filename_parts)).with_suffix(".tif").as_posix()
+        filename_parts.insert(1, dt_valid.strftime("%Y%m%d%H"))
+        filename_dst = (
+            Path(dst).joinpath(".".join(filename_parts)).with_suffix(".tif").as_posix()
+        )
 
         cgdal.gdal_translate_w_options(
             tif := filename_dst,
