@@ -59,7 +59,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     }
 
     try:
-
         filename = os.path.basename(src)
 
         # Take the source path as the destination unless defined.
@@ -106,7 +105,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
                 outfile_list.append(
                     {
-                        "filetype": acquirable,
+                        "filetype": "nbm-co-airtemp",
                         "file": tif,
                         "datetime": dt_valid.isoformat(),
                         "version": dt_ref.isoformat(),

@@ -104,7 +104,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
                 outfile_list.append(
                     {
-                        "filetype": acquirable,
+                        "filetype": "nbm-co-qpf",
                         "file": tif,
                         "datetime": dt_valid.isoformat(),
                         "version": dt_ref.isoformat(),
