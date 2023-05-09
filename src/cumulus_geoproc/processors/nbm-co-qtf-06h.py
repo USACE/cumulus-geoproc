@@ -82,7 +82,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         filename_parts = filename.split(".")
         filename_parts.insert(1, dt_valid.strftime("%Y%m%d"))
-        filename_dst = Path(dst).joinpath(".".join(filename_parts))
+        filename_dst = Path(dst).joinpath(".".join(filename_parts)).with_suffix(".tif").as_posix()
 
         cgdal.gdal_translate_w_options(
             tif := filename_dst,
