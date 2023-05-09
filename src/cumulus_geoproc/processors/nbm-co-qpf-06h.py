@@ -4,19 +4,17 @@ CONUS 1hour Forecasted Airtemp and QPF
 """
 
 
-import os
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pyplugs
-from cumulus_geoproc import logger, utils
-from cumulus_geoproc.utils import cgdal
 from osgeo import gdal
 
+from cumulus_geoproc import logger
+from cumulus_geoproc.utils import cgdal
+
 gdal.UseExceptions()
-
-
-this = os.path.basename(__file__)
 
 
 @pyplugs.register
@@ -49,75 +47,70 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
     outfile_list = []
 
-    filetype_elements = {
-        "qpf": {
-            "GRIB_ELEMENT": "QPF06",
-            "GRIB_SHORT_NAME": "0\\-SFC",
-        }
+    attr = {
+        "GRIB_ELEMENT": "QPF06",
+        "GRIB_SHORT_NAME": "0\\-SFC",
     }
 
     try:
-
-        filename = os.path.basename(src)
+        filename = Path(src).name
 
         # Take the source path as the destination unless defined.
         # User defined `dst` not programatically removed unless under
         # source's temporary directory.
         if dst is None:
-            dst = os.path.dirname(src)
+            dst = Path(src).parent
 
         ds = gdal.Open(src)
         gdal_info = gdal.Info(ds, format="json")
 
-        for param, attr in filetype_elements.items():
-            try:
-                if (band_number := cgdal.band_from_json(gdal_info, attr, True)) is None:
-                    raise Exception("Band number not found for attributes: {attr}")
+        if (band_number := cgdal.band_from_json(gdal_info, attr, True)) is None:
+            raise Exception("Band number not found for attributes: {attr}")
 
-                logger.debug(f"Band number '{band_number}' found for attributes {attr}")
+        logger.debug(f"Band number '{band_number}' found for attributes {attr}")
 
-                raster = ds.GetRasterBand(band_number)
+        raster = ds.GetRasterBand(band_number)
 
-                # Get Datetime from String Like "1599008400 sec UTC"
-                time_pattern = re.compile(r"\d+")
-                valid_time_match = time_pattern.match(
-                    raster.GetMetadataItem("GRIB_VALID_TIME")
-                )
-                dt_valid = datetime.fromtimestamp(
-                    int(valid_time_match[0]), timezone.utc
-                )
+        # Get Datetime from String Like "1599008400 sec UTC"
+        time_pattern = re.compile("\\d+")
+        valid_time_match = time_pattern.match(raster.GetMetadataItem("GRIB_VALID_TIME"))
+        dt_valid = datetime.fromtimestamp(int(valid_time_match[0]), timezone.utc)
 
-                ref_time_match = time_pattern.match(
-                    raster.GetMetadataItem("GRIB_REF_TIME")
-                )
-                dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
+        ref_time_match = time_pattern.match(raster.GetMetadataItem("GRIB_REF_TIME"))
+        dt_ref = datetime.fromtimestamp(int(ref_time_match[0]), timezone.utc)
 
-                filename_dst = utils.file_extension(filename, suffix=f"-{param}.tif")
+        filename_parts = filename.split(".")
+        filename_parts.insert(1, dt_valid.strftime("%Y%m%d"))
+        filename_dst = Path(dst).joinpath(".".join(filename_parts))
 
-                cgdal.gdal_translate_w_options(
-                    tif := os.path.join(dst, filename_dst), ds, bandList=[band_number]
-                )
+        cgdal.gdal_translate_w_options(
+            tif := filename_dst,
+            ds,
+            bandList=[band_number],
+        )
 
-                # validate COG
-                # if (validate := cgdal.validate_cog("-q", tif)) == 0:
-                #     logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
+        # validate COG
+        # if (validate := cgdal.validate_cog("-q", tif)) == 0:
+        #     logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
 
-                outfile_list.append(
-                    {
-                        "filetype": acquirable,
-                        "file": tif,
-                        "datetime": dt_valid.isoformat(),
-                        "version": dt_ref.isoformat(),
-                    },
-                )
-                logger.debug(f"Appended Payload: {outfile_list[-1]}")
-
-            except RuntimeError as ex:
-                logger.error(f"{type(ex).__name__}: {this}: {ex}")
-                continue
+        outfile_list.append(
+            {
+                "filetype": acquirable,
+                "file": tif,
+                "datetime": dt_valid.isoformat(),
+                "version": dt_ref.isoformat(),
+            },
+        )
+        logger.debug(f"Appended Payload: {outfile_list[-1]}")
 
     except (RuntimeError, KeyError) as ex:
-        logger.error(f"{type(ex).__name__}: {this}: {ex}")
+        logger.error(
+            "{}: {}: {}".format(
+                type(ex).__name__,
+                Path(__file__).name,
+                ex,
+            )
+        )
     finally:
         # closing the data source
         ds = None
