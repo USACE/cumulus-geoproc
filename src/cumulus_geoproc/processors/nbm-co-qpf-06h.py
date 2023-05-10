@@ -48,7 +48,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     outfile_list = []
 
     attr = {
-        "GRIB_ELEMENT": "QPF01",
+        "GRIB_ELEMENT": "QPF06",
         "GRIB_SHORT_NAME": "0\\-SFC",
     }
 
@@ -97,12 +97,13 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         outfile_list.append(
             {
-                "filetype": "nbm-co-qpf",
+                "filetype": acquirable,
                 "file": tif,
                 "datetime": dt_valid.isoformat(),
                 "version": dt_ref.isoformat(),
             },
         )
+        logger.debug(f"Appended Payload: {outfile_list[-1]}")
 
     except (RuntimeError, KeyError) as ex:
         logger.error(

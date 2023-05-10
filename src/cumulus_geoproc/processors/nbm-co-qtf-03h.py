@@ -48,8 +48,10 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     outfile_list = []
 
     attr = {
-        "GRIB_ELEMENT": "QPF01",
-        "GRIB_SHORT_NAME": "0\\-SFC",
+        "GRIB_COMMENT": "Temperature \\[C\\]",
+        "GRIB_ELEMENT": "^T$",
+        "GRIB_SHORT_NAME": "2\\-HTGL",
+        "GRIB_UNIT": "\\[C\\]",
     }
 
     try:
@@ -62,9 +64,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             dst = Path(src).parent
 
         ds = gdal.Open(src)
-        gdal_info = gdal.Info(ds, format="json")
 
-        if (band_number := cgdal.band_from_json(gdal_info, attr, True)) is None:
+        if (band_number := cgdal.find_band(ds, attr, True)) is None:
             raise Exception("Band number not found for attributes: {attr}")
 
         logger.debug(f"Band number '{band_number}' found for attributes {attr}")
@@ -97,12 +98,13 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
         outfile_list.append(
             {
-                "filetype": "nbm-co-qpf",
+                "filetype": acquirable,
                 "file": tif,
                 "datetime": dt_valid.isoformat(),
                 "version": dt_ref.isoformat(),
             },
         )
+        logger.debug(f"Appended Payload: {outfile_list[-1]}")
 
     except (RuntimeError, KeyError) as ex:
         logger.error(
