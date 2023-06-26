@@ -1,12 +1,12 @@
 # Base requirements
 httpx
 httpx[http2]
-boto3==1.21.29
-botocore==1.24.29
-celery==5.2.3
+boto3==1.26.160
+botocore==1.29.160
+celery==5.3.1
 pyplugs==0.4.0
-netCDF4==1.5.8
-requests==2.27.1
-GDAL[numpy]==3.5.3
+netCDF4==1.6.4
+requests==2.31.0
+GDAL[numpy]==3.7.0
 psycopg2-binary==2.9.3
 pyresample
