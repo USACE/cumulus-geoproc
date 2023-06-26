@@ -1,4 +1,5 @@
-FROM osgeo/gdal:ubuntu-full-3.5.3
+# FROM osgeo/gdal:ubuntu-full-3.5.3
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.7.0
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
@@ -6,9 +7,19 @@ ENV PYTEST_ADDOPTS="--color=yes"
 # env var for test data version to use, which should always be the most up to date
 ENV TEST_DATA_TAG=2023-05-05
 
-RUN apt-get update -y && \
-    apt-get install -y python3-pip curl && \
-    rm -rf /var/lib/apt/lists/*
+# Note: The apt and python pip below should MOSTLY match the 
+#       cumulus-api/async-geoproc/Dockerfile to ensure the 
+#       same environment and versions.
+# apt-get upgrade is used below because gdal:ubuntu-full-3.7.0 needs patched
+
+RUN apt-get update -y && apt-get upgrade -y \
+  && apt-get install -y python3-pip curl \
+  && rm -rf /var/lib/apt/lists/* \
+  && python3 -m pip install --no-cache-dir --upgrade pip \
+  && python3 -m pip install --no-cache-dir --upgrade setuptools \
+  && python3 -m pip install --no-cache-dir --upgrade wheel \
+  && python3 -m pip install --no-cache-dir --upgrade pillow \
+  && python3 -m pip install --no-cache-dir --upgrade numpy
 
 # Output File Location
 RUN mkdir /output
