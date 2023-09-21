@@ -303,6 +303,25 @@ def validate_cog(*args):
 
 
 def openfileGDAL(src, dst):
+    """Set Source and Destination paths and open file in GDAL
+
+    Parameters
+    src : str
+        path to input file for processing
+    dst : str, optional
+        path to temporary directory
+
+    Returns
+    -------
+    ds: osgeo.gdal.Dataset Object
+        open GDAL opbject
+    src_path
+        Source Path
+    dst_path
+        Destiniation path
+
+    """
+
     # Source and Destination as Paths
     # take the source path as the destination unless defined.
     src_path = Path(src)
@@ -344,24 +363,61 @@ def openfileGDAL(src, dst):
     return ds, src_path, dst_path
 
 
-def findsubset(ds, subsets):
+def findsubset(ds, subset_params):
+    """Find and open correct Subdataset in gdal file and open it
+
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    subset_params: list of str
+        list of strings to find correct subdataset by datatypes
+
+    Returns
+    -------
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object of subdataset
+
+
+    """
     subdatasets = ds.GetSubDatasets()
 
     for subdataset in subdatasets:
         subsetpath, datatype = subdataset
-        if all([x in datatype for x in subsets]):
+        if all([x in datatype for x in subset_params]):
             ds = gdal.Open(subsetpath)
             break
         else:
             ds = None
 
     if ds is None:
-        raise Exception(f"Did not find the sub-dataset we are lookingfor, {subsets}")
+        raise Exception(
+            f"Did not find the sub-dataset we are lookingfor, {subset_params}"
+        )
 
     return ds
 
 
 def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
+    """Get the Version date of the grid
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    src_path: path
+        path of the dataset
+    metaVar: str
+        key for metatdata param that contains the version date
+    fileDateFormat: str
+        format string for data in filename i.e. %Y%m%d_%H%M
+    filedateSearch: regular expression operation
+        regular expression operation to find date in filename
+
+    Returns
+    -------
+    version_datetime: datatime
+        Reference Time (forecast), ISO format with timezone
+
+
+    """
     # get the version
     date_created = ds.GetMetadataItem(metaVar)
     date_created_match = re.search("\\d+", date_created)
@@ -379,6 +435,32 @@ def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
 
 
 def subsetOutFile(ds, SUBSET_NAME, dst_path, acquirable, version_datetime):
+    """grab subsetdata raster, convert to Tif, save information to out_file
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    SUBSET_NAME: string
+        name of the subset
+    dst_path
+        destination path
+    acquirable: string
+        acquirable name SLUG
+    version_datetime: datatime
+        Reference Time (forecast), ISO format with timezone
+
+    Returns
+    -------
+    outfile_list: dictonary
+        {
+        "filetype": str,         Matching database acquirable
+        "file": str,             Converted file
+        "datetime": str,         Valid Time, ISO format with timezone
+        "version": str           Reference Time (forecast), ISO format with timezone
+        }
+
+
+    """
+
     # Get the subset metadata and the valid times as a list
     outfile_list = []
     sub_meta = ds.GetMetadata_Dict()
