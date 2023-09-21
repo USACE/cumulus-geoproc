@@ -18,8 +18,11 @@ import pathlib
 import re
 import subprocess
 from typing import List
+from pathlib import Path
+from datetime import datetime, timezone
 
-from cumulus_geoproc import logger
+from cumulus_geoproc import logger, utils
+from cumulus_geoproc.utils import cgdal
 from osgeo import gdal
 from osgeo_utils import gdal_calc
 from osgeo_utils.samples import validate_cloud_optimized_geotiff
@@ -297,6 +300,124 @@ def validate_cog(*args):
     logger.debug(f"Argvs: {argv=}")
 
     return validate_cloud_optimized_geotiff.main(argv)
+
+
+def openfileGDAL(src, dst):
+    # Source and Destination as Paths
+    # take the source path as the destination unless defined.
+    src_path = Path(src)
+    if dst is None:
+        dst_path = src_path.parent
+    else:
+        dst_path = Path(dst)
+
+    # NOTE: Because we are already working against a copy of the acquirable file 'src',
+    #       not the original archive file on AWS S3, use gdal.Open() with gdal.GA_Update
+    #       (not gdal.GA_ReadOnly).
+    #
+    #       This allows setting Transform and Projection on the dataset so they are included
+    #       in the bands that get translated out. Because 'src' is already a copy, no risk of
+    #       corrupting the original file at this time. If 'src' is ever passed as a virtual
+    #       path to the original file in archive (e.g. /vsis3/...), will want to revisit.
+    exts = (
+        ".gz",
+        ".tar",
+        ".zip",
+        ".tar.gz",
+    )
+
+    try:
+        if any([x in src for x in exts]):
+            try:
+                ds = gdal.Open("/vsigzip/" + src, gdal.GA_Update)
+            except RuntimeError as err:
+                logger.warning(err)
+                logger.warning(f'gunzip "{src}" and use as source file')
+                src_unzip = utils.decompress(src, str(dst_path))
+                ds = gdal.Open(src_unzip, gdal.GA_Update)
+        else:
+            ds = gdal.Open(src, gdal.GA_Update)
+    except RuntimeError as err:
+        logger.warning(err)
+        logger.warning(f"could not open file {src}")
+
+    return ds, src_path, dst_path
+
+
+def findsubset(ds, subsets):
+    subdatasets = ds.GetSubDatasets()
+
+    for subdataset in subdatasets:
+        subsetpath, datatype = subdataset
+        if all([x in datatype for x in subsets]):
+            ds = gdal.Open(subsetpath)
+            break
+        else:
+            ds = None
+
+    if ds is None:
+        raise Exception(f"Did not find the sub-dataset we are lookingfor, {subsets}")
+
+    return ds
+
+
+def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
+    # get the version
+    date_created = ds.GetMetadataItem(metaVar)
+    date_created_match = re.search("\\d+", date_created)
+    if date_created_match:
+        version_datetime = datetime.fromtimestamp(int(date_created_match[0])).replace(
+            tzinfo=timezone.utc
+        )
+    else:
+        filename = src_path.name
+        date_str = re.search(filedateSearch, filename)[0]
+        version_datetime = datetime.strptime(date_str, fileDateFormat).replace(
+            tzinfo=timezone.utc
+        )
+    return version_datetime
+
+
+def subsetOutFile(ds, SUBSET_NAME, dst_path, acquirable, version_datetime):
+    # Get the subset metadata and the valid times as a list
+    outfile_list = []
+    sub_meta = ds.GetMetadata_Dict()
+    valid_times_list = list(eval(sub_meta[f"{SUBSET_NAME}#validTimes"]))
+    valid_times_list.sort()
+
+    for i, t in enumerate(valid_times_list):
+        # skip the zero valid time
+        if i == 0:
+            continue
+
+        valid_datetime = datetime.fromtimestamp(t).replace(tzinfo=timezone.utc)
+
+        raster_band = ds.GetRasterBand(i)
+
+        nodata = raster_band.GetNoDataValue()
+
+        cgdal.gdal_translate_w_options(
+            tif := str(
+                dst_path / f'{acquirable}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
+            ),
+            ds,
+            bandList=[i],
+            noData=nodata,
+        )
+
+        # validate COG
+        if (validate := cgdal.validate_cog("-q", tif)) == 0:
+            logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
+
+        outfile_list.append(
+            {
+                "filetype": acquirable,
+                "file": tif,
+                "datetime": valid_datetime.isoformat(),
+                "version": version_datetime.isoformat(),
+            },
+        )
+    return outfile_list
 
 
 # TODO: GridProcess class
