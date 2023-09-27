@@ -45,20 +45,20 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     ```
     """
 
-    # try:
-    # determine the path and open the file in gdal
-    ds, src_path, dst_path = cgdal.openfileGDAL(src, dst)
+    try:
+        # determine the path and open the file in gdal
+        ds, src_path, dst_path = cgdal.openfileGDAL(src, dst)
 
-    ds = cgdal.findsubset(ds, [SUBSET_NAME, SUBSET_DATATYPE])
+        ds = cgdal.findsubset(ds, [SUBSET_NAME, SUBSET_DATATYPE])
 
-    version_datetime = cgdal.getVersionDate(
-        ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}"
-    )
+        version_datetime = cgdal.getVersionDate(
+            ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}"
+        )
 
-    outfile_list = cgdal.subsetOutFile(
-        ds, SUBSET_NAME, dst_path, acquirable, version_datetime
-    )
-    """
+        outfile_list = cgdal.subsetOutFile(
+            ds, SUBSET_NAME, dst_path, acquirable, version_datetime
+        )
+
     except (RuntimeError, KeyError, Exception) as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         traceback_details = {
@@ -73,5 +73,5 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
     finally:
         ds = None
-    """
+
     return outfile_list
