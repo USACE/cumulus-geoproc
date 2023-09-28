@@ -488,7 +488,7 @@ def geoTransform_ds(ds, SUBSET_NAME):
 
     ds.SetGeoTransform(geotransform)
     ds.SetProjection(hrap.PROJ4)
-
+    logger.debug(f" projection: {ds.GetGCPProjection()}")
     return ds, lonLL, latLL, lonUR, latUR
 
 
@@ -542,7 +542,7 @@ def subsetOutFile(
         raster_band = ds.GetRasterBand(i)
 
         nodata = raster_band.GetNoDataValue()
-
+        logger.debug(f" Kwargs: {kwargs}")
         cgdal.gdal_translate_w_options(
             tif := str(
                 dst_path / f'{acquirable}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
