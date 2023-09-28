@@ -22,7 +22,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 from cumulus_geoproc import logger, utils
-from cumulus_geoproc.utils import cgdal
+from cumulus_geoproc.utils import cgdal, hrap
 from osgeo import gdal
 from osgeo_utils import gdal_calc
 from osgeo_utils.samples import validate_cloud_optimized_geotiff
@@ -434,7 +434,72 @@ def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
     return version_datetime
 
 
-def subsetOutFile(ds, SUBSET_NAME, dst_path, acquirable, version_datetime):
+def geoTransform_ds(ds, SUBSET_NAME):
+    sub_meta = ds.GetMetadata_Dict()
+
+    # Initial metadata value for qpe_grid#latLonLL looks like: "{-123.6735229012065,29.94159256439344}"
+    # strip() removes characters "{" and "}"
+    # split() returns a list of two strings (which represent numbers), split on the ","
+    # map() converts each string to a float; list() converts the map object back to a list
+    #
+    # lower left coordinates (minimum x, minimum y)
+    lonLL, latLL = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#latLonLL"].strip("{}").split(","))
+    )  # Lon/Lat
+    hrap_xmin, hrap_ymin = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#gridPointLL"].strip("{}").split(","))
+    )  # HRAP
+    ster_xmin, ster_ymin = hrap.ster_x(hrap_xmin), hrap.ster_y(
+        hrap_ymin
+    )  # Polar Stereographic
+
+    #
+    # upper right coordinates (maximum x, maximum y) in geographic space and pixel space
+    lonUR, latUR = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#latLonUR"].strip("{}").split(","))
+    )  # Lon/Lat
+    hrap_xmax, hrap_ymax = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#gridPointUR"].strip("{}").split(","))
+    )  # HRAP
+    ster_xmax, ster_ymax = hrap.ster_x(hrap_xmax), hrap.ster_y(
+        hrap_ymax
+    )  # Polar Stereographic
+    #
+    # size of the grid
+    # nrows = number of rows in the grid (y or latitude direction)
+    # ncols = number of columns in the grid (x or longitude direction)
+    ncols, nrows = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#domainExtent"].strip("{}").split(","))
+    )
+
+    # Grid Cell Resolution; polar stereographic reference
+    xres = (ster_xmax - ster_xmin) / float(ncols)
+    yres = (ster_ymax - ster_ymin) / float(nrows)
+
+    # Specify geotransform
+    # https://gdal.org/tutorials/geotransforms_tut.html#introduction-to-geotransforms
+    # GT(0) x-coordinate of the upper-left corner of the upper-left pixel.
+    # GT(1) w-e pixel resolution / pixel width.
+    # GT(2) row rotation (typically zero).
+    # GT(3) y-coordinate of the upper-left corner of the upper-left pixel.
+    # GT(4) column rotation (typically zero).
+    # GT(5) n-s pixel resolution / pixel height (negative value for a north-up image).
+    geotransform = (ster_xmin, xres, 0, ster_ymax, 0, -yres)
+
+    ds.SetGeoTransform(geotransform)
+    ds.SetProjection(hrap.PROJ4)
+
+    return ds, lonLL, latLL, lonUR, latUR
+
+
+def subsetOutFile(
+    ds,
+    SUBSET_NAME,
+    dst_path,
+    acquirable,
+    version_datetime,
+    **kwargs,
+):
     """grab subsetdata raster, convert to Tif, save information to out_file
     Parameters
     ds:  osgeo.gdal.Dataset Object
@@ -485,6 +550,7 @@ def subsetOutFile(ds, SUBSET_NAME, dst_path, acquirable, version_datetime):
             ds,
             bandList=[i],
             noData=nodata,
+            **kwargs,
         )
 
         # validate COG

@@ -10,7 +10,7 @@ import sys
 import pyplugs
 
 from cumulus_geoproc import logger
-from cumulus_geoproc.utils import cgdal
+from cumulus_geoproc.utils import cgdal, hrap
 
 SUBSET_NAME = "QPF_SFC"
 SUBSET_DATATYPE = "32-bit floating-point"
@@ -55,8 +55,16 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}"
         )
 
+        ds, lonLL, latLL, lonUR, latUR = cgdal.geoTransform_ds(ds, SUBSET_NAME)
+
         outfile_list = cgdal.subsetOutFile(
-            ds, SUBSET_NAME, dst_path, acquirable, version_datetime
+            ds,
+            SUBSET_NAME,
+            dst_path,
+            acquirable,
+            version_datetime,
+            outputBounds=[lonLL, latUR, lonUR, latLL],
+            outputSRS="EPSG:4326",
         )
 
     except (RuntimeError, KeyError, Exception) as ex:
