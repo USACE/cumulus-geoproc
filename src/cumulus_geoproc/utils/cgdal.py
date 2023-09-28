@@ -384,7 +384,7 @@ def findsubset(ds, subset_params):
     for subdataset in subdatasets:
         subsetpath, datatype = subdataset
         if all([x in datatype for x in subset_params]):
-            ds = gdal.Open(subsetpath)
+            ds = gdal.Open(subsetpath, gdal.GA_Update)
             break
         else:
             ds = None
