@@ -171,4 +171,4 @@ cython_debug/
 # Test Results
 cumulus-geoproc-test-results/**
 !cumulus-geoproc-test-results/README.md
-!cumulus-geoproc-test-results/report.html
+cumulus-geoproc-test-results/report.html

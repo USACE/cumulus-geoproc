@@ -94,11 +94,19 @@ def gdal_translate_w_options(
     }
     """dict: base (default) options but can be re-asigned"""
     _kwargs = {**base, **kwargs}
-    gdal.Translate(
+    print(f"destination: {dst}, source: {src}, kwargs: {_kwargs}")
+    test = gdal.Translate(
         dst,
         src,
         **_kwargs,
     )
+    try:
+        print(f"input file projection {src.GetProjection()}")
+        print(f"input file transformation {src.GetGeoTransform()}")
+        print(f"output file projection {test.GetProjection()}")
+        print(f"output file transformation {test.GetGeoTransform()}")
+    except:
+        print("not files")
 
 
 def gdal_translate_w_overviews(
@@ -489,7 +497,6 @@ def geoTransform_ds(ds, SUBSET_NAME):
     ds.SetGeoTransform(geotransform)
     ds.SetProjection(hrap.PROJ4)
     warp = gdal.Warp("", ds, format="vrt", dstSRS="EPSG:4326")
-    logger.info(f" projection: {warp.GetGCPProjection()}")
     return warp, lonLL, latLL, lonUR, latUR
 
 

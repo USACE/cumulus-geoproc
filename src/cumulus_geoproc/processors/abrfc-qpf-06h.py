@@ -56,6 +56,9 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         )
 
         ds, lonLL, latLL, lonUR, latUR = cgdal.geoTransform_ds(ds, SUBSET_NAME)
+        print("ABRFC QPF testing")
+        print(f"input file projection {ds.GetProjection()}")
+        print(f"input file transformation {ds.GetGeoTransform()}")
 
         outfile_list = cgdal.subsetOutFile(
             ds,
@@ -63,8 +66,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             dst_path,
             acquirable,
             version_datetime,
-            outputBounds=[lonLL, latUR, lonUR, latLL],
-            outputSRS="EPSG:4326",
+            # outputBounds=[lonLL, latUR, lonUR, latLL],
+            # outputSRS="EPSG:4326",
         )
 
     except (RuntimeError, KeyError, Exception) as ex:
