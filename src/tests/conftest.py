@@ -17,6 +17,7 @@ TEST_PRODUCTS = (
     Path(__file__).parent.joinpath("integration/fixtures/test_products.json").resolve()
 )
 
+
 OUTPUT_PRODUCTS = []
 
 

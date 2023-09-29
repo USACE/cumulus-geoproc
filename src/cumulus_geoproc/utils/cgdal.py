@@ -94,19 +94,11 @@ def gdal_translate_w_options(
     }
     """dict: base (default) options but can be re-asigned"""
     _kwargs = {**base, **kwargs}
-    print(f"destination: {dst}, source: {src}, kwargs: {_kwargs}")
-    test = gdal.Translate(
+    gdal.Translate(
         dst,
         src,
         **_kwargs,
     )
-    try:
-        print(f"input file projection {src.GetProjection()}")
-        print(f"input file transformation {src.GetGeoTransform()}")
-        print(f"output file projection {test.GetProjection()}")
-        print(f"output file transformation {test.GetGeoTransform()}")
-    except:
-        print("not files")
 
 
 def gdal_translate_w_overviews(
@@ -550,7 +542,6 @@ def subsetOutFile(
         raster_band = ds.GetRasterBand(i)
 
         nodata = raster_band.GetNoDataValue()
-        logger.debug(f" Kwargs: {kwargs}")
         cgdal.gdal_translate_w_options(
             tif := str(
                 dst_path / f'{acquirable}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
