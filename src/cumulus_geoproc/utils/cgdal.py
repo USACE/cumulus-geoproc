@@ -489,7 +489,7 @@ def geoTransform_ds(ds, SUBSET_NAME):
     ds.SetGeoTransform(geotransform)
     ds.SetProjection(hrap.PROJ4)
     warp = gdal.Warp("", ds, format="vrt", dstSRS="EPSG:4326")
-    logger.debug(f" projection: {ds.GetGCPProjection()}")
+    logger.info(f" projection: {warp.GetGCPProjection()}")
     return warp, lonLL, latLL, lonUR, latUR
 
 
