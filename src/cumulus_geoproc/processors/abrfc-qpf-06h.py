@@ -10,7 +10,7 @@ import sys
 import pyplugs
 
 from cumulus_geoproc import logger
-from cumulus_geoproc.utils import cgdal, hrap
+from cumulus_geoproc.utils import cgdal
 
 SUBSET_NAME = "QPF_SFC"
 SUBSET_DATATYPE = "32-bit floating-point"
