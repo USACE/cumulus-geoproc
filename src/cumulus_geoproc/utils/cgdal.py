@@ -363,7 +363,7 @@ def openfileGDAL(src, dst):
     return ds, src_path, dst_path
 
 
-def findsubset(ds, subset_params):
+def findsubset(ds: gdal.Dataset, subset_params):
     """Find and open correct Subdataset in gdal file and open it
 
     Parameters
@@ -397,7 +397,9 @@ def findsubset(ds, subset_params):
     return ds
 
 
-def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
+def getVersionDate(
+    ds: gdal.Dataset, src_path, metaVar: str, fileDateFormat: str, filedateSearch
+):
     """Get the Version date of the grid
     Parameters
     ds:  osgeo.gdal.Dataset Object
@@ -434,7 +436,19 @@ def getVersionDate(ds, src_path, metaVar, fileDateFormat, filedateSearch):
     return version_datetime
 
 
-def geoTransform_ds(ds, SUBSET_NAME):
+def geoTransform_ds(ds: gdal.Dataset, SUBSET_NAME: str, dstSRS: str = "EPSG:4326"):
+    """
+
+    Args:
+        ds (gdal.Dataset): open GDAL object
+        SUBSET_NAME (str): used to grab meta data from the gdal object
+        dstSRS (str, optional): projection to convert the gdal object to. Defaults to "EPSG:4326".
+
+    Returns:
+        warp(gdal.Dataset): gdal object with correct projection and geotranformation
+        lonLL, latLL, lonUR, latUR: Lat and long of Lower Left corner and Upper Right corner of dataset
+
+    """
     sub_meta = ds.GetMetadata_Dict()
 
     # Initial metadata value for qpe_grid#latLonLL looks like: "{-123.6735229012065,29.94159256439344}"
@@ -488,13 +502,13 @@ def geoTransform_ds(ds, SUBSET_NAME):
 
     ds.SetGeoTransform(geotransform)
     ds.SetProjection(hrap.PROJ4)
-    warp = gdal.Warp("", ds, format="vrt", dstSRS="EPSG:4326")
+    warp = gdal.Warp("", ds, format="vrt", dstSRS=dstSRS)
     return warp, lonLL, latLL, lonUR, latUR
 
 
 def subsetOutFile(
-    ds,
-    SUBSET_NAME,
+    ds: gdal.Dataset,
+    SUBSET_NAME: str,
     dst_path,
     acquirable,
     version_datetime,
@@ -544,8 +558,7 @@ def subsetOutFile(
         nodata = raster_band.GetNoDataValue()
         cgdal.gdal_translate_w_options(
             tif := str(
-                dst_path
-                / f'{acquirable}testing.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
+                dst_path / f'{acquirable}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
             ),
             ds,
             bandList=[i],
