@@ -544,7 +544,8 @@ def subsetOutFile(
         nodata = raster_band.GetNoDataValue()
         cgdal.gdal_translate_w_options(
             tif := str(
-                dst_path / f'{acquirable}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
+                dst_path
+                / f'{acquirable}testing.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
             ),
             ds,
             bandList=[i],
