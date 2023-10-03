@@ -52,7 +52,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         ds = cgdal.findsubset(ds, [SUBSET_NAME, SUBSET_DATATYPE])
 
         version_datetime = cgdal.getVersionDate(
-            ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}, False"
+            ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}", False
         )
 
         ds, lonLL, latLL, lonUR, latUR = cgdal.geoTransform_ds(ds, SUBSET_NAME)
