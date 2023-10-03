@@ -18,8 +18,11 @@ import pathlib
 import re
 import subprocess
 from typing import List
+from pathlib import Path
+from datetime import datetime, timezone
 
-from cumulus_geoproc import logger
+from cumulus_geoproc import logger, utils
+from cumulus_geoproc.utils import cgdal, hrap
 from osgeo import gdal
 from osgeo_utils import gdal_calc
 from osgeo_utils.samples import validate_cloud_optimized_geotiff
@@ -297,6 +300,293 @@ def validate_cog(*args):
     logger.debug(f"Argvs: {argv=}")
 
     return validate_cloud_optimized_geotiff.main(argv)
+
+
+def openfileGDAL(src, dst):
+    """Set Source and Destination paths and open file in GDAL
+
+    Parameters
+    src : str
+        path to input file for processing
+    dst : str, optional
+        path to temporary directory
+
+    Returns
+    -------
+    ds: osgeo.gdal.Dataset Object
+        open GDAL opbject
+    src_path
+        Source Path
+    dst_path
+        Destiniation path
+
+    """
+
+    # Source and Destination as Paths
+    # take the source path as the destination unless defined.
+    src_path = Path(src)
+    if dst is None:
+        dst_path = src_path.parent
+    else:
+        dst_path = Path(dst)
+
+    # NOTE: Because we are already working against a copy of the acquirable file 'src',
+    #       not the original archive file on AWS S3, use gdal.Open() with gdal.GA_Update
+    #       (not gdal.GA_ReadOnly).
+    #
+    #       This allows setting Transform and Projection on the dataset so they are included
+    #       in the bands that get translated out. Because 'src' is already a copy, no risk of
+    #       corrupting the original file at this time. If 'src' is ever passed as a virtual
+    #       path to the original file in archive (e.g. /vsis3/...), will want to revisit.
+    exts = (
+        ".gz",
+        ".tar",
+        ".zip",
+        ".tar.gz",
+    )
+
+    try:
+        if any([x in src for x in exts]):
+            try:
+                ds = gdal.Open("/vsigzip/" + src, gdal.GA_Update)
+            except RuntimeError as err:
+                logger.warning(err)
+                logger.warning(f'gunzip "{src}" and use as source file')
+                src_unzip = utils.decompress(src, str(dst_path))
+                ds = gdal.Open(src_unzip, gdal.GA_Update)
+        else:
+            ds = gdal.Open(src, gdal.GA_Update)
+    except RuntimeError as err:
+        logger.warning(err)
+        logger.warning(f"could not open file {src}")
+
+    return ds, src_path, dst_path
+
+
+def findsubset(ds: gdal.Dataset, subset_params):
+    """Find and open correct Subdataset in gdal file and open it
+
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    subset_params: list of str
+        list of strings to find correct subdataset by datatypes
+
+    Returns
+    -------
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object of subdataset
+
+
+    """
+    subdatasets = ds.GetSubDatasets()
+
+    for subdataset in subdatasets:
+        subsetpath, datatype = subdataset
+        if all([x in datatype for x in subset_params]):
+            ds = gdal.Open(subsetpath, gdal.GA_Update)
+            break
+        else:
+            ds = None
+
+    if ds is None:
+        raise Exception(
+            f"Did not find the sub-dataset we are lookingfor, {subset_params}"
+        )
+
+    return ds
+
+
+def getVersionDate(
+    ds: gdal.Dataset,
+    src_path,
+    metaVar: str,
+    fileDateFormat: str,
+    filedateSearch,
+    MetaDate=True,
+):
+    """Get the Version date of the grid
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    src_path: path
+        path of the dataset
+    metaVar: str
+        key for metatdata param that contains the version date
+    fileDateFormat: str
+        format string for data in filename i.e. %Y%m%d_%H%M
+    filedateSearch: regular expression operation
+        regular expression operation to find date in filename
+    MetaDate: Boolean
+        Defaul = True.  Use date from file metadata.  If false it will only look at file.
+
+    Returns
+    -------
+    version_datetime: datatime
+        Reference Time (forecast), ISO format with timezone
+
+
+    """
+    # get the version
+    date_created = ds.GetMetadataItem(metaVar)
+    date_created_match = re.search("\\d+", date_created)
+    if date_created_match and MetaDate:
+        version_datetime = datetime.fromtimestamp(int(date_created_match[0])).replace(
+            tzinfo=timezone.utc
+        )
+    else:
+        filename = src_path.name
+        date_str = re.search(filedateSearch, filename)[0]
+        version_datetime = datetime.strptime(date_str, fileDateFormat).replace(
+            tzinfo=timezone.utc
+        )
+    return version_datetime
+
+
+def geoTransform_ds(ds: gdal.Dataset, SUBSET_NAME: str, dstSRS: str = "EPSG:4326"):
+    """
+
+    Args:
+        ds (gdal.Dataset): open GDAL object
+        SUBSET_NAME (str): used to grab meta data from the gdal object
+        dstSRS (str, optional): projection to convert the gdal object to. Defaults to "EPSG:4326".
+
+    Returns:
+        warp(gdal.Dataset): gdal object with correct projection and geotranformation
+        lonLL, latLL, lonUR, latUR: Lat and long of Lower Left corner and Upper Right corner of dataset
+
+    """
+    sub_meta = ds.GetMetadata_Dict()
+
+    # Initial metadata value for qpe_grid#latLonLL looks like: "{-123.6735229012065,29.94159256439344}"
+    # strip() removes characters "{" and "}"
+    # split() returns a list of two strings (which represent numbers), split on the ","
+    # map() converts each string to a float; list() converts the map object back to a list
+    #
+    # lower left coordinates (minimum x, minimum y)
+    lonLL, latLL = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#latLonLL"].strip("{}").split(","))
+    )  # Lon/Lat
+    hrap_xmin, hrap_ymin = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#gridPointLL"].strip("{}").split(","))
+    )  # HRAP
+    ster_xmin, ster_ymin = hrap.ster_x(hrap_xmin), hrap.ster_y(
+        hrap_ymin
+    )  # Polar Stereographic
+
+    #
+    # upper right coordinates (maximum x, maximum y) in geographic space and pixel space
+    lonUR, latUR = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#latLonUR"].strip("{}").split(","))
+    )  # Lon/Lat
+    hrap_xmax, hrap_ymax = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#gridPointUR"].strip("{}").split(","))
+    )  # HRAP
+    ster_xmax, ster_ymax = hrap.ster_x(hrap_xmax), hrap.ster_y(
+        hrap_ymax
+    )  # Polar Stereographic
+    #
+    # size of the grid
+    # nrows = number of rows in the grid (y or latitude direction)
+    # ncols = number of columns in the grid (x or longitude direction)
+    ncols, nrows = list(
+        map(float, sub_meta[f"{SUBSET_NAME}#domainExtent"].strip("{}").split(","))
+    )
+
+    # Grid Cell Resolution; polar stereographic reference
+    xres = (ster_xmax - ster_xmin) / float(ncols)
+    yres = (ster_ymax - ster_ymin) / float(nrows)
+
+    # Specify geotransform
+    # https://gdal.org/tutorials/geotransforms_tut.html#introduction-to-geotransforms
+    # GT(0) x-coordinate of the upper-left corner of the upper-left pixel.
+    # GT(1) w-e pixel resolution / pixel width.
+    # GT(2) row rotation (typically zero).
+    # GT(3) y-coordinate of the upper-left corner of the upper-left pixel.
+    # GT(4) column rotation (typically zero).
+    # GT(5) n-s pixel resolution / pixel height (negative value for a north-up image).
+    geotransform = (ster_xmin, xres, 0, ster_ymax, 0, -yres)
+
+    ds.SetGeoTransform(geotransform)
+    ds.SetProjection(hrap.PROJ4)
+    warp = gdal.Warp("", ds, format="vrt", dstSRS=dstSRS)
+    return warp, lonLL, latLL, lonUR, latUR
+
+
+def subsetOutFile(
+    ds: gdal.Dataset,
+    SUBSET_NAME: str,
+    dst_path,
+    acquirable,
+    version_datetime,
+    **kwargs,
+):
+    """grab subsetdata raster, convert to Tif, save information to out_file
+    Parameters
+    ds:  osgeo.gdal.Dataset Object
+        open GDAL object
+    SUBSET_NAME: string
+        name of the subset
+    dst_path
+        destination path
+    acquirable: string
+        acquirable name SLUG
+    version_datetime: datatime
+        Reference Time (forecast), ISO format with timezone
+
+    Returns
+    -------
+    outfile_list: dictonary
+        {
+        "filetype": str,         Matching database acquirable
+        "file": str,             Converted file
+        "datetime": str,         Valid Time, ISO format with timezone
+        "version": str           Reference Time (forecast), ISO format with timezone
+        }
+
+
+    """
+
+    # Get the subset metadata and the valid times as a list
+    outfile_list = []
+    sub_meta = ds.GetMetadata_Dict()
+    valid_times_list = list(eval(sub_meta[f"{SUBSET_NAME}#validTimes"]))
+    valid_times_list.sort()
+
+    for i, t in enumerate(valid_times_list):
+        # skip the zero valid time
+        if i == 0:
+            continue
+
+        valid_datetime = datetime.fromtimestamp(t).replace(tzinfo=timezone.utc)
+
+        raster_band = ds.GetRasterBand(i)
+
+        nodata = raster_band.GetNoDataValue()
+        cgdal.gdal_translate_w_options(
+            tif := str(
+                dst_path
+                / f'{acquirable}.{version_datetime.strftime("%Y%m%d_%H%M")}.{valid_datetime.strftime("%Y%m%d_%H%M")}.tif'
+            ),
+            ds,
+            bandList=[i],
+            noData=nodata,
+            **kwargs,
+        )
+
+        # validate COG
+        if (validate := cgdal.validate_cog("-q", tif)) == 0:
+            logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
+
+        outfile_list.append(
+            {
+                "filetype": acquirable,
+                "file": tif,
+                "datetime": valid_datetime.isoformat(),
+                "version": version_datetime.isoformat(),
+            },
+        )
+    return outfile_list
 
 
 # TODO: GridProcess class

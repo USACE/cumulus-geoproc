@@ -7,6 +7,13 @@
         "name_pattern": "abrfc_qpe_01hr_%Y%m%d%HZ.nc"
     },
     {
+        "plugin": "abrfc-qpf-06h",
+        "url": "",
+        "local_source": "fixtures/abrfc-qpf-06h/QPF6_2023091912f060.cdf",
+        "versioned": true,
+        "name_pattern": "QPF6_%Y%m%d%Hf060.nc.gz"
+    },
+    {
         "plugin": "cbrfc-mpe",
         "url": "",
         "local_source": "cumulus-geoproc-test-data/fixtures/cbrfc-mpe/xmrg0809202212z.grb",

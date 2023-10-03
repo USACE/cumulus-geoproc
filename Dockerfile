@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
 
 # env var for test data version to use, which should always be the most up to date
-ENV TEST_DATA_TAG=2023-05-05
+ENV TEST_DATA_TAG=2023-09-19
 
 # Note: The apt and python pip below should MOSTLY match the 
 #       cumulus-api/async-geoproc/Dockerfile to ensure the 
@@ -33,9 +33,9 @@ WORKDIR /app
 
 # Get the test data before testing it
 RUN curl -L https://github.com/USACE/cumulus-geoproc-test-data/releases/download/${TEST_DATA_TAG}/cumulus-geoproc-test-data.tar.gz \
-    --output cumulus-geoproc-test-data.tar.gz && \
-    tar -xzvf cumulus-geoproc-test-data.tar.gz && \
-    rm -f cumulus-geoproc-test-data.tar.gz
+  --output cumulus-geoproc-test-data.tar.gz && \
+  tar -xzvf cumulus-geoproc-test-data.tar.gz && \
+  rm -f cumulus-geoproc-test-data.tar.gz
 
 # Install Pip Requirements
 # This first install is the cumulus-geoproc package
