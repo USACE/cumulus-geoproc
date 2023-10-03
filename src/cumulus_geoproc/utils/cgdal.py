@@ -398,7 +398,12 @@ def findsubset(ds: gdal.Dataset, subset_params):
 
 
 def getVersionDate(
-    ds: gdal.Dataset, src_path, metaVar: str, fileDateFormat: str, filedateSearch
+    ds: gdal.Dataset,
+    src_path,
+    metaVar: str,
+    fileDateFormat: str,
+    filedateSearch,
+    MetaDate=True,
 ):
     """Get the Version date of the grid
     Parameters
@@ -412,6 +417,8 @@ def getVersionDate(
         format string for data in filename i.e. %Y%m%d_%H%M
     filedateSearch: regular expression operation
         regular expression operation to find date in filename
+    MetaDate: Boolean
+        Defaul = True.  Use date from file metadata.  If false it will only look at file.
 
     Returns
     -------
@@ -423,7 +430,7 @@ def getVersionDate(
     # get the version
     date_created = ds.GetMetadataItem(metaVar)
     date_created_match = re.search("\\d+", date_created)
-    if date_created_match:
+    if date_created_match and MetaDate:
         version_datetime = datetime.fromtimestamp(int(date_created_match[0])).replace(
             tzinfo=timezone.utc
         )
