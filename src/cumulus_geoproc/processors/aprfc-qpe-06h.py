@@ -1,7 +1,7 @@
 """
-# Arkansas-Red Basin River Forecast Center
+# Alaska Pacific River Forecast Center
 
-## QPF 06 hour total precipitation
+## QPE 06 hour total precipitation
 """
 
 
@@ -11,9 +11,6 @@ import pyplugs
 
 from cumulus_geoproc import logger
 from cumulus_geoproc.utils import cgdal
-
-SUBSET_NAME = "QPF_SFC"
-SUBSET_DATATYPE = "32-bit floating-point"
 
 
 @pyplugs.register
@@ -46,25 +43,41 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
 
     try:
+        attr = {"GRIB_ELEMENT": "APCP"}
         # determine the path and open the file in gdal
-        ds, src_path, dst_path = cgdal.openfileGDAL(src, dst)
+        ds, src_path, dst_path = cgdal.openfileGDAL(src, dst, GDALAccess="read_only")
 
-        ds = cgdal.findsubset(ds, [SUBSET_NAME, SUBSET_DATATYPE])
+        # Grad the grid from the band
+        if (band_number := cgdal.find_band(ds, attr)) is None:
+            raise Exception("Band number not found for attributes: {attr}")
 
-        version_datetime = cgdal.getDate(
-            ds, src_path, "NC_GLOBAL#creationTime", "%Y%m%d%H", "\\d{10}", False
-        )
+        logger.debug(f"Band number '{band_number}' found for attributes {attr}")
 
-        ds, lonLL, latLL, lonUR, latUR = cgdal.geoTransform_ds(ds, SUBSET_NAME)
-        outfile_list = cgdal.subsetOutFile(
+        raster = ds.GetRasterBand(band_number)
+
+        # Get Datetime from String Like "1599008400 sec UTC"
+        dt_valid = cgdal.getDate(raster, src_path, "GRIB_VALID_TIME", None, None)
+
+        cgdal.gdal_translate_w_options(
+            tif := os.path.join(
+                dst, f'{acquirable}.{dt_valid.strftime("%Y%m%d_%H%M")}.tif'
+            ),
             ds,
-            SUBSET_NAME,
-            dst_path,
-            acquirable,
-            version_datetime,
-            outputBounds=[lonLL, latUR, lonUR, latLL],
-            outputSRS="EPSG:4326",
+            bandList=[band_number],
         )
+
+        # validate COG
+        if (validate := cgdal.validate_cog("-q", tif)) == 0:
+            logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
+
+        outfile_list = [
+            {
+                "filetype": acquirable,
+                "file": tif,
+                "datetime": dt_valid.isoformat(),
+                "version": None,
+            },
+        ]
 
     except (RuntimeError, KeyError, Exception) as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -80,5 +93,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
 
     finally:
         ds = None
+        raster = None
 
     return outfile_list

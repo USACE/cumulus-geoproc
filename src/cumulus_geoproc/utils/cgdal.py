@@ -302,7 +302,7 @@ def validate_cog(*args):
     return validate_cloud_optimized_geotiff.main(argv)
 
 
-def openfileGDAL(src, dst):
+def openfileGDAL(src, dst, GDALAccess="Update"):
     """Set Source and Destination paths and open file in GDAL
 
     Parameters
@@ -310,6 +310,8 @@ def openfileGDAL(src, dst):
         path to input file for processing
     dst : str, optional
         path to temporary directory
+    GDALAccess: str default 'Update'
+        read_only or update access to object.
 
     Returns
     -------
@@ -344,18 +346,22 @@ def openfileGDAL(src, dst):
         ".zip",
         ".tar.gz",
     )
+    if GDALAccess == "read_only":
+        GDALAccess = gdal.GA_ReadOnly
+    else:
+        GDALAccess = gdal.GA_Update
 
     try:
         if any([x in src for x in exts]):
             try:
-                ds = gdal.Open("/vsigzip/" + src, gdal.GA_Update)
+                ds = gdal.Open("/vsigzip/" + src, GDALAccess)
             except RuntimeError as err:
                 logger.warning(err)
                 logger.warning(f'gunzip "{src}" and use as source file')
                 src_unzip = utils.decompress(src, str(dst_path))
-                ds = gdal.Open(src_unzip, gdal.GA_Update)
+                ds = gdal.Open(src_unzip, GDALAccess)
         else:
-            ds = gdal.Open(src, gdal.GA_Update)
+            ds = gdal.Open(src, GDALAccess)
     except RuntimeError as err:
         logger.warning(err)
         logger.warning(f"could not open file {src}")
@@ -397,7 +403,7 @@ def findsubset(ds: gdal.Dataset, subset_params):
     return ds
 
 
-def getVersionDate(
+def getDate(
     ds: gdal.Dataset,
     src_path,
     metaVar: str,
@@ -405,7 +411,7 @@ def getVersionDate(
     filedateSearch,
     MetaDate=True,
 ):
-    """Get the Version date of the grid
+    """Get date from the grid or filename
     Parameters
     ds:  osgeo.gdal.Dataset Object
         open GDAL object
@@ -422,25 +428,31 @@ def getVersionDate(
 
     Returns
     -------
-    version_datetime: datatime
+    date_datetime: datatime
         Reference Time (forecast), ISO format with timezone
 
 
     """
+    date_datetime = None
     # get the version
     date_created = ds.GetMetadataItem(metaVar)
     date_created_match = re.search("\\d+", date_created)
     if date_created_match and MetaDate:
-        version_datetime = datetime.fromtimestamp(int(date_created_match[0])).replace(
+        date_datetime = datetime.fromtimestamp(int(date_created_match[0])).replace(
             tzinfo=timezone.utc
         )
     else:
         filename = src_path.name
         date_str = re.search(filedateSearch, filename)[0]
-        version_datetime = datetime.strptime(date_str, fileDateFormat).replace(
+        date_datetime = datetime.strptime(date_str, fileDateFormat).replace(
             tzinfo=timezone.utc
         )
-    return version_datetime
+
+    if date_datetime is None:
+        raise Exception(
+            f"Did not find the date we were looking for in grid, {filename}"
+        )
+    return date_datetime
 
 
 def geoTransform_ds(ds: gdal.Dataset, SUBSET_NAME: str, dstSRS: str = "EPSG:4326"):

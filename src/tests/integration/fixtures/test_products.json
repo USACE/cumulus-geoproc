@@ -9,9 +9,23 @@
     {
         "plugin": "abrfc-qpf-06h",
         "url": "",
-        "local_source": "fixtures/abrfc-qpf-06h/QPF6_2023091912f060.cdf",
+        "local_source": "cumulus-geoproc-test-data/fixtures/abrfc-qpf-06h/QPF6_2023091912f060.cdf",
         "versioned": true,
         "name_pattern": "QPF6_%Y%m%d%Hf060.nc.gz"
+    },
+    {
+        "plugin": "aprfc-qpe-06h",
+        "url": "",
+        "local_source": "cumulus-geoproc-test-data/fixtures/aprfc-qpe-06h/precip_acr_grid_06_12_20231104.grb.gz",
+        "versioned": false,
+        "name_pattern": "precip_acr_grid_06_12_%y%m%d.grb.gz"
+    },
+    {
+        "plugin": "aprfc-qpf-06h",
+        "url": "",
+        "local_source": "cumulus-geoproc-test-data/fixtures/aprfc-qpf-06h/qpf06f_has_96f_20231108_12_awips_202311040704.grb.gz",
+        "versioned": true,
+        "name_pattern": "qpf06f_has_96f_%Y%m%d_%H_awips_%Y%m%d%H%M.grb.gz"
     },
     {
         "plugin": "cbrfc-mpe",
