@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
 
 # env var for test data version to use, which should always be the most up to date
-ENV TEST_DATA_TAG=2023-09-19
+ENV TEST_DATA_TAG=2023-11-08
 
 # Note: The apt and python pip below should MOSTLY match the 
 #       cumulus-api/async-geoproc/Dockerfile to ensure the 
