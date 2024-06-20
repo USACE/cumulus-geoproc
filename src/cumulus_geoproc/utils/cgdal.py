@@ -604,3 +604,6 @@ def subsetOutFile(
 # TODO: GridProcess class
 class GridProcess:
     pass
+
+class BandNotFoundError(Exception):
+    """Custom exception for missing band number"""
