@@ -14,6 +14,13 @@
         "name_pattern": "QPF6_%Y%m%d%Hf060.nc.gz"
     },
     {
+        "plugin": "aorc-csu-precip",
+        "url": "",
+        "local_source": "fixtures/aorc-csu-precip/AORC_1.1_APCP_surface_2021123003.nc4",
+        "versioned": true,
+        "name_pattern": "AORC_1.1_APCP_surface_%Y%m%d%H.nc4"
+    },
+    {
         "plugin": "aprfc-qpe-06h",
         "url": "",
         "local_source": "cumulus-geoproc-test-data/fixtures/aprfc-qpe-06h/precip_acr_grid_06_12_20231104.grb.gz",
