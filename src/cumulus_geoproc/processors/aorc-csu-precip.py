@@ -63,6 +63,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             ),
             ds,
             bandList=[band_number],
+            outputSRS="EPSG:4326",
         )
 
         # validate COG
