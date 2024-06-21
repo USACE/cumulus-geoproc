@@ -74,8 +74,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 "filetype": acquirable,
                 "file": tif,
                 "datetime": dt_valid.isoformat(),
-                # TODO: Make this unversioned
-                "version": dt_valid.isoformat()
+                "version": None
             },
         ]
 
