@@ -10,6 +10,7 @@ import pyplugs
 
 from cumulus_geoproc import logger
 from cumulus_geoproc.utils import cgdal
+from osgeo.gdalconst import GDT_Float32
 
 
 @pyplugs.register
@@ -64,6 +65,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
             ds,
             bandList=[band_number],
             outputSRS="EPSG:4326",
+            unscale=True,
+            outputType=GDT_Float32
         )
 
         # validate COG
