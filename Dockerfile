@@ -11,7 +11,7 @@ ENV PYTEST_ADDOPTS="--color=yes"
 ENV TEST_DATA_TAG=2023-11-08
 
 RUN apt-get update -y \
-  && apt-get install -y python3-pip curl \
+  && apt-get install -y python3-pip python3-venv curl \
   && rm -rf /var/lib/apt/lists/*
 
 # Output File Location
@@ -32,8 +32,8 @@ RUN curl -L https://github.com/USACE/cumulus-geoproc-test-data/releases/download
 
 # Install Pip Requirements
 # This first install is the cumulus-geoproc package
-RUN python3 -m venv /opt/myenv \
-  && /opt/myenv/bin/pip install . \
+RUN python3 -m venv /opt/myenv
+RUN /opt/myenv/bin/pip install . \
   && /opt/myenv/bin/pip install -r requirements-dev.txt
 
 # Prepend the virtual environment's bin directory to PATH
