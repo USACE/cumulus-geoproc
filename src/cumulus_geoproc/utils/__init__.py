@@ -137,7 +137,7 @@ def decompress(src: str, dst: str = "/tmp", recursive: bool = False):
 
                 dst_ = os.path.join(dst, fname)
 
-                tar.extractall(dst_)
+                tar.extractall(path=dst_, filter="tar")
                 if recursive:
                     for member in tar.getmembers():
                         if member.isfile():
@@ -152,4 +152,3 @@ def decompress(src: str, dst: str = "/tmp", recursive: bool = False):
         return False
 
     return src
-
