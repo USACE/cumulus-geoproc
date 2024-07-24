@@ -4,7 +4,7 @@ Integration test methods to support testing
 
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -61,7 +61,7 @@ def tiff_files(tmpdir_factory):
 
 
 def request_product(
-    url: str, name_pattern: str, date_time: datetime = datetime.utcnow()
+    url: str, name_pattern: str, date_time: datetime = datetime.now(timezone.utc)
 ) -> str:
     """request_product from provided url and save as a temporary file
 
@@ -72,7 +72,7 @@ def request_product(
     name_pattern : str
         filename datetime pattern
     date_time : datetime, optional
-        datetime dependent part of the filename, by default datetime.utcnow()
+        datetime dependent part of the filename, by default datetime.now(timezone.utc)
 
     Returns
     -------

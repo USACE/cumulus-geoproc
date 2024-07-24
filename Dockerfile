@@ -1,5 +1,8 @@
-# FROM osgeo/gdal:ubuntu-full-3.5.3
-FROM ghcr.io/osgeo/gdal:ubuntu-full-3.7.0
+# NOTE: This dockerfile is only for testing and does not run in dev/test/prod.
+# It is only run locally or in CI/CD workflows (Github)
+# Versions should match the cumulus-api/async-geoproc/Dockerfile
+
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.9.1
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTEST_ADDOPTS="--color=yes"
@@ -7,19 +10,9 @@ ENV PYTEST_ADDOPTS="--color=yes"
 # env var for test data version to use, which should always be the most up to date
 ENV TEST_DATA_TAG=2023-11-08
 
-# Note: The apt and python pip below should MOSTLY match the 
-#       cumulus-api/async-geoproc/Dockerfile to ensure the 
-#       same environment and versions.
-# apt-get upgrade is used below because gdal:ubuntu-full-3.7.0 needs patched
-
-RUN apt-get update -y && apt-get upgrade -y \
-  && apt-get install -y python3-pip curl \
-  && rm -rf /var/lib/apt/lists/* \
-  && python3 -m pip install --no-cache-dir --upgrade pip \
-  && python3 -m pip install --no-cache-dir --upgrade setuptools \
-  && python3 -m pip install --no-cache-dir --upgrade wheel \
-  && python3 -m pip install --no-cache-dir --upgrade pillow \
-  && python3 -m pip install --no-cache-dir --upgrade numpy
+RUN apt-get update -y \
+  && apt-get install -y python3-pip python3-venv curl \
+  && rm -rf /var/lib/apt/lists/*
 
 # Output File Location
 RUN mkdir /output
@@ -39,8 +32,12 @@ RUN curl -L https://github.com/USACE/cumulus-geoproc-test-data/releases/download
 
 # Install Pip Requirements
 # This first install is the cumulus-geoproc package
-RUN pip3 install .
-RUN pip3 install -r requirements-dev.txt
+RUN python3 -m venv /opt/myenv
+RUN /opt/myenv/bin/pip install . \
+  && /opt/myenv/bin/pip install -r requirements-dev.txt
+
+# Prepend the virtual environment's bin directory to PATH
+ENV PATH="/opt/myenv/bin:$PATH"
 
 COPY ./entrypoint.sh /entrypoint.sh
 
