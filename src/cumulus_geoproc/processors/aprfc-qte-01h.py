@@ -43,7 +43,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     """
 
     try:
-        attr = {"GRIB_COMMENT" "Temperature [C]"}
+        attr = {"GRIB_COMMENT":"Temperature [C]"}
         # determine the path and open the file in gdal
         ds, src_path, dst_path = cgdal.openfileGDAL(src, dst, GDALAccess="read_only")
 
