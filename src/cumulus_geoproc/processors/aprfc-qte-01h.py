@@ -47,6 +47,8 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     # determine the path and open the file in gdal
     ds, src_path, dst_path = cgdal.openfileGDAL(src, dst, GDALAccess="read_only")
 
+    logger.debug(f"ds = {ds}, src_path = {src_path}, dst_path = {dst_path}")
+
     # Grad the grid from the band
     if (band_number := cgdal.find_band(ds, attr)) is None:
         raise Exception("Band number not found for attributes: {attr}")
