@@ -28,6 +28,13 @@
         "name_pattern": "qpf06f_has_96f_%Y%m%d_%H_awips_%Y%m%d%H%M.grb.gz"
     },
     {
+        "plugin": "aprfc-qte-01h",
+        "url": "",
+        "local_source": "cumulus-geoproc-test-data/fixtures/aprfc-qte-06h/20240731_akurma.t11z.2dvaranl_ndfd_3p0.grb2.gz",
+        "versioned": false,
+        "name_pattern": "%Y%m%d_akurma.t%Hz.2dvaranl_ndfd_3p0.grb2"
+    },
+    {
         "plugin": "cbrfc-mpe",
         "url": "",
         "local_source": "cumulus-geoproc-test-data/fixtures/cbrfc-mpe/xmrg0809202212z.grb",
