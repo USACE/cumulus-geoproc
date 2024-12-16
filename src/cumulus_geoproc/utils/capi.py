@@ -5,6 +5,7 @@
 from collections import namedtuple
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
+import os
 import httpx
 from cumulus_geoproc.configurations import APPLICATION_KEY
 from cumulus_geoproc import logger
@@ -99,6 +100,9 @@ class NotifyCumulus(CumulusAPI):
     def __init__(self, url, http2=True):
         super().__init__(url, http2)
         self.endpoint = "productfiles"
+        # Patch to work with new /api endpoints if present
+        if "/api" in os.getenv("CUMULUS_API_URL"):
+            self.endpoint.endpoint = "api/productfiles"
         self.query = {"key": APPLICATION_KEY}
 
     def run(self, payload):
