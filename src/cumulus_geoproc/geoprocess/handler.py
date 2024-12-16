@@ -1,7 +1,6 @@
 """handle the messages coming from the worker thread
 """
 
-
 import asyncio
 import os
 from collections import namedtuple
@@ -116,6 +115,11 @@ def upload_notify(notices: list, bucket: str):
     if len(payload) > 0:
         cumulus_api = capi.CumulusAPI(CUMULUS_API_URL, HTTP2)
         cumulus_api.endpoint = "productfiles"
+
+        # Patch to work with new /api endpoints if present
+        if "/api" in os.getenv("CUMULUS_API_URL"):
+            cumulus_api.endpoint = "api/productfiles"
+
         cumulus_api.query = {"key": APPLICATION_KEY}
 
         logger.debug(f"Payload to POST: {payload}")
