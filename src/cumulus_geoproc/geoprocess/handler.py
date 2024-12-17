@@ -114,11 +114,13 @@ def upload_notify(notices: list, bucket: str):
     # notify
     if len(payload) > 0:
         cumulus_api = capi.CumulusAPI(CUMULUS_API_URL, HTTP2)
-        cumulus_api.endpoint = "productfiles"
 
         # Patch to work with new /api endpoints if present
-        if "/api" in os.getenv("CUMULUS_API_URL"):
+        if cumulus_api.endpoint == "/api":
             cumulus_api.endpoint = "api/productfiles"
+        else:
+            # Use the old path where there is not /api present
+            cumulus_api.endpoint = "productfiles"
 
         cumulus_api.query = {"key": APPLICATION_KEY}
 

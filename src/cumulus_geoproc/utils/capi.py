@@ -99,10 +99,14 @@ class NotifyCumulus(CumulusAPI):
 
     def __init__(self, url, http2=True):
         super().__init__(url, http2)
-        self.endpoint = "productfiles"
+
         # Patch to work with new /api endpoints if present
-        if "/api" in os.getenv("CUMULUS_API_URL"):
-            self.endpoint.endpoint = "api/productfiles"
+        if self.endpoint == "/api":
+            self.endpoint = "api/productfiles"
+        else:
+            # Use the old path where there is not /api present
+            self.endpoint = "productfiles"
+
         self.query = {"key": APPLICATION_KEY}
 
     def run(self, payload):
