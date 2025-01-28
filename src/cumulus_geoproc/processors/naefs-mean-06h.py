@@ -1,7 +1,6 @@
 """NAEFS Mean 6 hour
 """
 
-
 import os
 import re
 from datetime import datetime, timezone
@@ -84,9 +83,12 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 geotransform = (xmin, xres, 0, ymax, 0, -yres)
 
                 _data = None
-                for dt in num2date(
+                datetimes = num2date(
                     nctime[:], nctime.units, only_use_cftime_datetimes=False
-                ):
+                )
+                if k == "QPF":
+                    datetimes = datetimes[1:]
+                for dt in datetimes:
                     dt_valid = dt.replace(tzinfo=timezone.utc)
                     idx = date2index(dt, nctime)
                     nctime_str = datetime.strftime(dt, "%Y%m%d%H%M")
