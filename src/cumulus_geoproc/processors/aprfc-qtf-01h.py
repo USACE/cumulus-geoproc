@@ -1,7 +1,7 @@
 """
 # Alaska Pacific River Forecast Center
 
-## QTE 01 hour total precipitation
+## QTF 01 hour forcasted temperatures
 """
 
 
