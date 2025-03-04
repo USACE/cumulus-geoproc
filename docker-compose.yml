@@ -1,0 +1,13 @@
+# The parser will ignore extension fields prefixed with 'x-'
+
+services:
+  geoproc:
+    build:
+      context: .
+      args:
+        TEST_DATA_TAG: "2025-01-31"
+    container_name: geoproc
+    command: itest # options in entrypoint are itest or run
+    volumes:
+      - ./docs:/opt/geoproc/docs
+      - ./cumulus-geoproc-test-results/:/tmp/pytest-of-root/pytest-current/tiffscurrent/
