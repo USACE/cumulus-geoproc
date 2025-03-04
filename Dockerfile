@@ -13,7 +13,8 @@ WORKDIR /opt/geoproc
 
 # apt-get install -y python3-pip python3-venv
 RUN apt-get -y update \
-    && apt-get install python3.12-venv -y
+    && apt-get install python3.12-venv -y \
+    && apt-get remove python3-pil -y
 
 # Get the test data before testing it
 ADD https://github.com/USACE/cumulus-geoproc-test-data/releases/download/${TEST_DATA_TAG}/cumulus-geoproc-test-data.tar.gz /opt/geoproc
@@ -29,7 +30,7 @@ COPY ./geoproc/ ./pkg
 RUN python3 -m venv --system-site-packages "$GEOPROC_VENV" \
     && . activate \
     && pip install -r requirements-dev.txt \
-    && pip install ${GEOPROC}/pkg/
+    && pip install -e ${GEOPROC}/pkg/
 
 COPY --chmod=755 ./entrypoint.sh /entrypoint.sh
 
