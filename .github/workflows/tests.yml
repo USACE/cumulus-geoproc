@@ -16,6 +16,6 @@ jobs:
         run: ./docker_run.sh -tb -a "TEST_DATA_TAG=2025-01-31"
 
       - name: Commit Changes
-        uses: EndBug/add-and-commit@v8
+        uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
