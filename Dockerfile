@@ -31,7 +31,3 @@ RUN python3 -m venv --system-site-packages "$GEOPROC_VENV" \
     && . activate \
     && pip install -r requirements-dev.txt \
     && pip install -e ${GEOPROC}/pkg/
-
-COPY --chmod=755 ./entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT [ "/entrypoint.sh" ]

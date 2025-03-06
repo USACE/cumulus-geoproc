@@ -2,7 +2,7 @@ name: Test Products
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: ["main", "develop", "test", "prod"]
 
   workflow_dispatch:
 
@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      # - name: Run Tests
-      #   run: ./docker_run.sh -tb -a "TEST_DATA_TAG=2025-01-31"
 
       - name: Build Image
         run: docker compose build geoproc
