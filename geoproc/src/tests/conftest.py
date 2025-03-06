@@ -11,7 +11,7 @@ from tempfile import NamedTemporaryFile
 import pytest
 import requests
 
-REPO_ROOT = Path(Path(__file__).parent.joinpath("../../")).resolve()
+REPO_ROOT = Path(os.getenv("GEOPROC"))
 GEOPROC_TEST_DATA = REPO_ROOT / "fixtures"
 TEST_PRODUCTS = (
     Path(__file__).parent.joinpath("integration/fixtures/test_products.json").resolve()

@@ -1,0 +1,13 @@
+# The parser will ignore extension fields prefixed with 'x-'
+
+services:
+  geoproc:
+    build:
+      context: .
+      args:
+        TEST_DATA_TAG: "2025-01-31"
+    container_name: geoproc
+    entrypoint: sleep infinity
+    # entrypoint: python3 -m pytest -v --html=./docs/index.html --self-contained-html
+    volumes:
+      - ./docs:/opt/geoproc/docs

@@ -5,6 +5,7 @@ Package level logging defined and log level set
 
 """
 
+__version__ = "0.1.0"
 
 import logging
 
