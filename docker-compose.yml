@@ -7,7 +7,8 @@ services:
       args:
         TEST_DATA_TAG: "2025-01-31"
     container_name: geoproc
-    command: run # options in entrypoint are itest or run
+    command: run
+    # command: itest
     volumes:
       - ./docs:/opt/geoproc/docs
       - ./geoproc/:/opt/geoproc/pkg/
