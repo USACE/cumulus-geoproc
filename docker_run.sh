@@ -1,12 +1,16 @@
 #!/bin/bash
 
 
-usage(){ printf "\n$0 usage:\n\n" && grep " .*)\ #" $0; exit 0;}
+usage(){ printf "\n$0 usage:\n\n" && grep " .*)\ #" $0; printf "\nexample: ./docker_run.sh -tb -a "TEST_DATA_TAG=2025-01-31"\n"; exit 0;}
 
 BUILD=false
+BUILD_ARG=""
 
-while getopts ":bhkt" option; do
+while getopts ":a:bhkt" option; do
     case ${option} in 
+        a) # adding an argument to the docker build
+            BUILD_ARG="--build-arg ${OPTARG}"
+            ;;
         b) # Build the docker image
             BUILD=true
             ;;
@@ -32,8 +36,8 @@ done
 # Build Image
 if [ "$BUILD" == "true" ]
 then
-    echo "docker build -t cumulus-geoproc-tests:latest ."
-    docker build -t cumulus-geoproc-tests:latest .
+    echo "docker build ${BUILD_ARG} -t cumulus-geoproc-tests:latest ."
+    docker build ${BUILD_ARG} -t cumulus-geoproc-tests:latest .
 fi
 
 # Run container
