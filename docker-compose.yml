@@ -7,7 +7,13 @@ services:
       args:
         TEST_DATA_TAG: "2025-01-31"
     container_name: geoproc
-    entrypoint: sleep infinity
+    # Option 1: keep container alive
+    # entrypoint: sleep infinity
+    # Option 2: run pytest on all processors against test data
     # entrypoint: python3 -m pytest -v --html=./docs/index.html --self-contained-html
+    # Option 3: run the developing processor on the example product
+    entrypoint: ["python3"]
+    command: [ "/opt/geoproc/develop/runner.py", "xmrg0809202212z.grb"]
     volumes:
       - ./docs:/opt/geoproc/docs
+      - ./geoproc_develop:/opt/geoproc/develop:rw

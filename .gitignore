@@ -1,6 +1,12 @@
 # MacOS DS_Store
 **/.DS_Store
 
+# ignore everything in the geoproc_develop except for the README file
+**/geoproc_develop/*
+!**/geoproc_develop/README.md
+!**/runner.py
+!**/processor.py
+
 # VS Code settings
 **/.vscode
 

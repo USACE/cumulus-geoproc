@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cumulus-geoproc"
+name = "cumulus_geoproc"
 dynamic = ["version"]
 description = "Implementation processing incoming grids to Cloud Optimized GeoTIFF (COG)"
 requires-python = ">=3.8"
