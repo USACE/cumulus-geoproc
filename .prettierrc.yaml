@@ -28,7 +28,7 @@ printWidth: 80
 requireConfig: true
 
 # Specify the parser to use (e.g., "babel", "typescript", "json", etc.)
-parser: "babel"  # Options: "babel", "babel-flow", "babel-ts", "flow", "typescript", "json", "json5", "graphql", "markdown", "mdx", "html", "vue", "angular", "css", "scss", "less", "yaml", "toml", "markdown", "mdx"
+parser: "yaml"  # Options: "babel", "babel-flow", "babel-ts", "flow", "typescript", "json", "json5", "graphql", "markdown", "mdx", "html", "vue", "angular", "css", "scss", "less", "yaml", "toml", "markdown", "mdx"
 
 # Specify whether to format markdown files
 proseWrap: "preserve"  # Options: "always", "never", "preserve"
@@ -46,7 +46,7 @@ singleAttributePerLine: false
 decoratorsBeforeExport: true
 
 # Control whether to use the `@` symbol for decorators
-jsxSingleQuote: false
+jsxSingleQuote: true
 
 # Control whether to use a space before function parentheses
 spaceBeforeFunctionParen: false
@@ -62,3 +62,18 @@ vueIndentScriptAndStyle: false
 
 # Control whether to use a space after the opening bracket and before the closing bracket in Angular
 angularIndentScriptAndStyle: false
+
+# Insert a special @format marker at the top of the files
+"insertPragma": false
+
+# Require pragma
+"requirePragma": false
+
+# Change when properties in objects are quoted
+"quoteProps": "as-needed" # Options: "as-needed", "consistent", "preserve"
+
+# Control whether Prettier formats quoted code embedded in the file
+"embeddedLanguageFormatting": "auto"
+
+# New ternary formatting
+"experimentalTernaries": false
