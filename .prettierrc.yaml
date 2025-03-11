@@ -10,16 +10,16 @@ useTabs: false
 semi: true
 
 # Use single quotes instead of double quotes
-singleQuote: true
+singleQuote: false
 
 # Trailing commas where valid in ES5 (objects, arrays, etc.)
-trailingComma: 'es5'  # Options: 'none', 'es5', 'all'
+trailingComma: 'es5' # Options: 'none', 'es5', 'all'
 
 # Print spaces between brackets in object literals
 bracketSpacing: true
 
 # Include parentheses around a sole arrow function parameter
-arrowParens: 'always'  # Options: 'always', 'avoid'
+arrowParens: 'always' # Options: 'always', 'avoid'
 
 # Format the code to fit within this line length
 printWidth: 80
@@ -28,13 +28,13 @@ printWidth: 80
 requireConfig: true
 
 # Specify the parser to use (e.g., "babel", "typescript", "json", etc.)
-parser: "yaml"  # Options: "babel", "babel-flow", "babel-ts", "flow", "typescript", "json", "json5", "graphql", "markdown", "mdx", "html", "vue", "angular", "css", "scss", "less", "yaml", "toml", "markdown", "mdx"
+parser: 'yaml' # Options: "babel", "babel-flow", "babel-ts", "flow", "typescript", "json", "json5", "graphql", "markdown", "mdx", "html", "vue", "angular", "css", "scss", "less", "yaml", "toml", "markdown", "mdx"
 
 # Specify whether to format markdown files
-proseWrap: "preserve"  # Options: "always", "never", "preserve"
+proseWrap: 'preserve' # Options: "always", "never", "preserve"
 
 # Control the use of end of line characters
-endOfLine: "lf"  # Options: "auto", "lf", "crlf", "cr"
+endOfLine: 'lf' # Options: "auto", "lf", "crlf", "cr"
 
 # Control whether to add a space before the closing bracket of object literals
 bracketSameLine: false
@@ -55,7 +55,7 @@ spaceBeforeFunctionParen: false
 jsxBracketSameLine: false
 
 # Control whether to use a space after the opening bracket and before the closing bracket in HTML
-htmlWhitespaceSensitivity: "css"  # Options: "css", "strict", "ignore"
+htmlWhitespaceSensitivity: 'css' # Options: "css", "strict", "ignore"
 
 # Control whether to use a space after the opening bracket and before the closing bracket in Vue
 vueIndentScriptAndStyle: false
@@ -64,16 +64,16 @@ vueIndentScriptAndStyle: false
 angularIndentScriptAndStyle: false
 
 # Insert a special @format marker at the top of the files
-"insertPragma": false
+insertPragma: false
 
 # Require pragma
-"requirePragma": false
+requirePragma: false
 
 # Change when properties in objects are quoted
-"quoteProps": "as-needed" # Options: "as-needed", "consistent", "preserve"
+quoteProps: 'as-needed' # Options: "as-needed", "consistent", "preserve"
 
 # Control whether Prettier formats quoted code embedded in the file
-"embeddedLanguageFormatting": "auto"
+embeddedLanguageFormatting: 'auto'
 
 # New ternary formatting
-"experimentalTernaries": false
+experimentalTernaries: false
