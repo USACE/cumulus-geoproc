@@ -1,60 +1,78 @@
 # Cumulus Geo Processors
 
-Python package implementation to process incoming grids to Cloud Optimized GeoTIFF (COG)
-
-# Geo Processor Development
+Python package implementation to process incoming grids to Cloud Optimized GeoTIFF (COG).  The `Geoprocessor` is a Python module built into the package and referenced as a plugin using the `pyplugs` package.
 
 ## Basic Processor Requirements:
 
-- Python modules using `pyplugs` to register the processor as a Python plugin
-  - decorator `@pyplugs.register` defines method as the plugin
-- Python file name matches Cumulus Acquirable name
-  - `nbm-co-01h` --> `nbm-co-01h.py`
-- Lives in `./src/cumulus_geoproc/processors`
-- Method arguments are:
+- The Python decorator `@pyplugs.register` defines the `process` method as the plugin
+- The plugin name (python filename) has to match the Cumulus Acquirable name
+  - Example: `nbm-co-01h` is the acquirable name and the processor name will be `nbm-co-01h.py`
+- Processors have to reside under the directory `./src/cumulus_geoproc/processors`
 
-  ```
-  src : str
-      path to input file for processing
-  dst : str, optional
-      path to temporary directory
-  acquirable: str, optional
-      acquirable slug
-  ```
 
-- Must return list of objects (dictionary)
-  ```
-  [{
-      "filetype": str,    Matching database acquirable
-      "file": str,        Converted file
-      "datetime": str,    Valid Time, ISO format with timezone
-      "version": str      Reference Time (forecasts only), ISO format with timezone
-  }]
-  ```
+## Processor Method
 
-## Unit and Integration Tests
+The following is the template for a `process` method in the geoprocessor module (acquirable.py file)
 
-The `pytest` framework was selected to test processors due to its ease in writing simple tests, readability and scalability. The `tests` directory is under the `./src` directory next to the `cumulus_geoproc` package. Test data for each processor lives in the GitHub repository [USACE/cumulus-geoproc-test-data](https://github.com/USACE/cumulus-geoproc-test-data). There are many ways to run these tests but two options are configured here, Docker Container and VS Code Development Environment. The VS Code Dev Env uses the `Dockerfile` to configure the container.
+```python
+@pyplugs.register
+def process(*, src: str, dst: str = None, acquirable: str = None):
+    """
+    # Grid processor
 
-### Testing on the Comman Line
+    __Requires keyword only arguments (*)__
 
-A shell script, `docker_run.sh`, is provided to build and test the processors. Options `-t` and `-k` run the tests and create a volume returning a report of the tests. If the docker image has not been created, or it needs a rebuild, the `-b` option must be provided.
+    Parameters
+    ----------
+    src : str
+        path to input file for processing
+    dst : str, optional
+        path to temporary directory
+    acquirable: str, optional
+        acquirable slug
 
-Build and test without report generation:
-
-```
-> ./docker_run.sh -bt
-```
-
-Build and test with report generation:
-
-```
-> ./docker_run.sh -btk
+    Returns
+    -------
+    List[dict]
+    ```
+    {
+        "filetype": str,         Matching database acquirable
+        "file": str,             Converted file
+        "datetime": str,         Valid Time, ISO format with timezone
+        "version": str           Reference Time (forecast), ISO format with timezone
+    }
+    ```
+    """
 ```
 
-## VS Code Developement Container
+## Processor Returns
 
-A VS Code development container configuration is provided to assist in processor and test development. See [Create a Dev Container](https://code.visualstudio.com/docs/devcontainers/create-dev-container) to use a Docker container as a full-featured development environment. A `devcontainer.json` configuration is provided already for development.
+Processors always return a list of objects as defined below
+
+```python
+return [{
+    "filetype": str,    Matching database acquirable
+    "file": str,        Converted file
+    "datetime": str,    Valid Time, ISO format with timezone
+    "version": str      Reference Time (forecasts only), ISO format with timezone
+}]
+```
+
+## Processor Local Development
+
+This repository tries to provide two basic ways to develop and test processors, .devcontainer and docker-compose.  The `.devcontainer` uses the existing `docker-compose.yml` file and is used with VS Code.  The other method is executing `docker compose` at the command line with appropriate options and commands.  Either method will require the user to make sure the `docker-compose.yml` file settings are correct before execution.
+
+There are three options in the `docker-compose.yml` file that should cover all needs during development.
+
+- Option 1: Run the container without it stopping and not run any processor
+  - this options allows the user to "jump" into the container
+- Option 2: Run `pytest` on all processors against the test data repo
+  - use this option when finalizing processor and testing all before pushing for a Pull Request; a failed test will not allow merging
+- Option 3: Run the developing processor code defined in the `geoproc_develop/processor.py` file
+  - requires developing processor code in the `processor.py` file
+  - requires the data product testing against in the `geoproc_develp` directory
+  - requires the `command` docker compose file element defined with `runner.py` and the testing product name
+    - example: `command: [ "/opt/geoproc/develop/runner.py", "test_product_name"]`
 
 # Processor Test Data
 
@@ -62,4 +80,13 @@ Test data lives in the GitHub repository [USACE/cumulus-geoproc-test-data](https
 
 The `tar.gz` also containes some helper scripts, `gen_markdown` and `tar_test_data.sh`. `gen_markdown` is a Python script creating `Markdown` from each `json` configuration creating [TESTDATA.md](./TESTDATA.md). The shell script `tar_test_data.sh` creates `cumulus-geoproc-test-data.tar.gz` if changes are added for a new release.
 
-**\*New release data requires the Docker file update `ENV TEST_DATA_TAG=YYYY-MM-DD`**
+# **\*New release data requires a Docker file update**
+
+```yaml
+services:
+  geoproc:
+    build:
+      context: .
+      args:
+        TEST_DATA_TAG: "2025-01-31"
+```
