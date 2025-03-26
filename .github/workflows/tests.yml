@@ -2,7 +2,7 @@ name: Test Products
 
 on:
   pull_request:
-    branches: ["cwbi-dev"]
+    branches: ["main", "develop"]
 
   workflow_dispatch:
 
