@@ -1,0 +1,79 @@
+# .prettierrc.yaml
+
+# Specify the number of spaces per indentation level
+tabWidth: 2
+
+# Indent lines with tabs instead of spaces
+useTabs: false
+
+# Print semicolons at the ends of statements
+semi: true
+
+# Use single quotes instead of double quotes
+singleQuote: false
+
+# Trailing commas where valid in ES5 (objects, arrays, etc.)
+trailingComma: 'es5' # Options: 'none', 'es5', 'all'
+
+# Print spaces between brackets in object literals
+bracketSpacing: true
+
+# Include parentheses around a sole arrow function parameter
+arrowParens: 'always' # Options: 'always', 'avoid'
+
+# Format the code to fit within this line length
+printWidth: 80
+
+# Control whether to format the code on save
+requireConfig: true
+
+# Specify the parser to use (e.g., "babel", "typescript", "json", etc.)
+parser: 'yaml' # Options: "babel", "babel-flow", "babel-ts", "flow", "typescript", "json", "json5", "graphql", "markdown", "mdx", "html", "vue", "angular", "css", "scss", "less", "yaml", "toml", "markdown", "mdx"
+
+# Specify whether to format markdown files
+proseWrap: 'preserve' # Options: "always", "never", "preserve"
+
+# Control the use of end of line characters
+endOfLine: 'lf' # Options: "auto", "lf", "crlf", "cr"
+
+# Control whether to add a space before the closing bracket of object literals
+bracketSameLine: false
+
+# Control whether to format the code in a single line
+singleAttributePerLine: false
+
+# Control whether to use the `@` symbol for decorators
+decoratorsBeforeExport: true
+
+# Control whether to use the `@` symbol for decorators
+jsxSingleQuote: true
+
+# Control whether to use a space before function parentheses
+spaceBeforeFunctionParen: false
+
+# Control whether to use a space after the opening bracket and before the closing bracket in JSX
+jsxBracketSameLine: false
+
+# Control whether to use a space after the opening bracket and before the closing bracket in HTML
+htmlWhitespaceSensitivity: 'css' # Options: "css", "strict", "ignore"
+
+# Control whether to use a space after the opening bracket and before the closing bracket in Vue
+vueIndentScriptAndStyle: false
+
+# Control whether to use a space after the opening bracket and before the closing bracket in Angular
+angularIndentScriptAndStyle: false
+
+# Insert a special @format marker at the top of the files
+insertPragma: false
+
+# Require pragma
+requirePragma: false
+
+# Change when properties in objects are quoted
+quoteProps: 'as-needed' # Options: "as-needed", "consistent", "preserve"
+
+# Control whether Prettier formats quoted code embedded in the file
+embeddedLanguageFormatting: 'auto'
+
+# New ternary formatting
+experimentalTernaries: false

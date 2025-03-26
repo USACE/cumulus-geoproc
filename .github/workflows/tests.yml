@@ -2,7 +2,7 @@ name: Test Products
 
 on:
   pull_request:
-    branches: ["main", "develop", "test", "prod"]
+    branches: ["main", "develop"]
 
   workflow_dispatch:
 
@@ -12,16 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Run Tests
-      #   run: ./docker_run.sh -tb -a "TEST_DATA_TAG=2025-01-31"
-
       - name: Build Image
-        run: docker compose build
+        run: docker compose build geoproc
 
       - name: Test Build
-        run: docker compose run --entrypoint "python3 -m pytest -v --html=./docs/index.html --self-contained-html" geoproc
+        run: docker compose run --rm --entrypoint "python3 -m pytest -v --html=./docs/index.html --self-contained-html" geoproc
 
-      - name: Commit Changes
-        uses: EndBug/add-and-commit@v8
-        with:
-          default_author: github_actions
+      # - name: Commit Changes
+      #   uses: EndBug/add-and-commit@v9
+      #   with:
+      #     default_author: github_actions
