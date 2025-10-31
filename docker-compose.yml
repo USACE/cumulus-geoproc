@@ -5,7 +5,7 @@ services:
     build:
       context: .
       args:
-        TEST_DATA_TAG: "2025-01-31"
+        TEST_DATA_TAG: "2025-10-31"
     container_name: geoproc
     # Option 1: keep container alive
     # entrypoint: sleep infinity
