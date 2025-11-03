@@ -47,39 +47,16 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         dst = Path(src).parent
 
     try:
+        data_set = gdal.Open(src)
 
-        data_set, src_path, dst_path = cgdal.openfileGDAL(
-            src.as_posix(), dst, GDALAccess="read_only"
+        outfile_list.append(
+            {
+                "filetype": acquirable,
+                "file": "",
+                "datetime": "",
+                "version": None,
+            }
         )
-
-        for subdata_set in data_set.GetSubDatasets():
-            nc_path, _ = subdata_set
-            _, _, nc_variable = nc_path.split(":")
-            if "time" in nc_variable.lower():
-                data_set = gdal.Open(nc_path)
-                _, _, time_units = data_set.GetMetadataItem("time#units").split()
-                since_time = datetime.strptime(
-                    time_units, "%Y-%m-%dT%H:%M:%SZ"
-                ).replace(tzinfo=timezone.utc)
-                bounds_time = data_set.ReadAsArray()[-1]
-                valid_time = since_time + timedelta(hours=float(bounds_time[-1]))
-
-            if "precipitation" in nc_variable.lower():
-                tif = Path(dst).joinpath(Path(src).stem).with_suffix(".tif").as_posix()
-                cgdal.gdal_translate_w_options(
-                    tif,
-                    data_set := gdal.Open(nc_path, gdal.GA_ReadOnly),
-                )
-
-        if tif:
-            outfile_list.append(
-                {
-                    "filetype": acquirable,
-                    "file": tif,
-                    "datetime": valid_time.isoformat(),
-                    "version": None,
-                }
-            )
 
     except RuntimeError:
         exc_type, exc_value, exc_traceback = sys.exc_info()
