@@ -3,10 +3,9 @@
 
 """
 
-
-from pathlib import Path
 import sys
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pyplugs
 from cumulus_geoproc import logger
@@ -48,7 +47,10 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         dst = Path(src).parent
 
     try:
-        data_set = gdal.Open(src)
+
+        data_set, src_path, dst_path = cgdal.openfileGDAL(
+            src.as_posix(), dst, GDALAccess="read_only"
+        )
 
         for subdata_set in data_set.GetSubDatasets():
             nc_path, _ = subdata_set
@@ -63,7 +65,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
                 valid_time = since_time + timedelta(hours=float(bounds_time[-1]))
 
             if "precipitation" in nc_variable.lower():
-                tif = Path(dst).joinpath(Path(src).name).with_suffix(".tif").as_posix()
+                tif = Path(dst).joinpath(Path(src).stem).with_suffix(".tif").as_posix()
                 cgdal.gdal_translate_w_options(
                     tif,
                     data_set := gdal.Open(nc_path, gdal.GA_ReadOnly),
