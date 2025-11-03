@@ -49,7 +49,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     try:
 
         data_set, src_path, dst_path = cgdal.openfileGDAL(
-            src.as_posix(), dst, GDALAccess="read_only"
+            str(src), dst, GDALAccess="read_only"
         )
 
         for subdata_set in data_set.GetSubDatasets():
