@@ -68,7 +68,7 @@ There are three options in the `docker-compose.yml` file that should cover all n
   - this options allows the user to "jump" into the container
 - Option 2: Run `pytest` on all processors against the test data repo
   - use this option when finalizing processor and testing all before pushing for a Pull Request; a failed test will not allow merging
-  - Note if the geoprocessor changes aren't included in the test, try to build the container with `docker compose build --no-cache geoproc` to make sure you are not testing with a cached geoprocessor.
+  - **Important: if the geoprocessor changes aren't included in the test, try to build the container with `docker compose build --no-cache geoproc` to make sure it is not testing with a cached geoprocessor. This is likely required to test  any changes.**
 - Option 3: Run the developing processor code defined in the `geoproc_develop/processor.py` file
   - Place the processor code you want to test in the `processor.py` file
   - Put a copy of the aquirable to be placed in the in the `geoproc_develop` directory
