@@ -51,7 +51,7 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
     ```
     """
 
-    outfile_list = list()
+    outfile_list = []
 
     try:
         filename = os.path.basename(src)
@@ -61,20 +61,20 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         # User defined `dst` not programatically removed unless under
         # source's temporary directory.
         if dst is None:
-            dst = os.path.dirname(src)
+            dst = os.path.dirname(str(src))
 
-        file_ = utils.decompress(src, dst)
+        file_ = utils.decompress(str(src), dst)
         logger.debug(f"Extract from zip: {file_}")
 
-        # get date from filename like PRISM_ppt_early_4kmD2_yyyyMMdd_bil.zip
-        time_pattern = re.compile(r"\w+_(?P<ymd>\d+)_\w+")
-        m = time_pattern.match(filename)
-        dt_valid = datetime.strptime(m.group("ymd"), "%Y%m%d").replace(
+        # get date from filename like prism_tmin_us_25m_YYYYMMDD.zip
+        date_str = filename.split('_')[-1].split('.')[0]
+        format_str = "%Y%m%d"
+        dt_valid = datetime.strptime(date_str, format_str).replace(
             hour=12, minute=0, second=0, tzinfo=timezone.utc
         )
 
-        src_bil = os.path.join(file_, utils.file_extension(filename, suffix=".bil"))
-        ds = gdal.Open(src_bil)
+        src_tif = os.path.join(file_, utils.file_extension(filename, suffix=".tif"))
+        ds = gdal.Open(src_tif)
 
         cgdal.gdal_translate_w_options(
             tif := os.path.join(dst, filename_dst),
@@ -84,9 +84,6 @@ def process(*, src: str, dst: str = None, acquirable: str = None):
         # validate COG
         if (validate := cgdal.validate_cog("-q", tif)) == 0:
             logger.debug(f"Validate COG = {validate}\t{tif} is a COG")
-
-        # closing the data source
-        ds = None
 
         outfile_list = [
             {

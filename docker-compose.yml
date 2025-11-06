@@ -5,18 +5,18 @@ services:
     build:
       context: .
       args:
-        TEST_DATA_TAG: "2025-10-31"
+        TEST_DATA_TAG: "2025-11-04"
     container_name: geoproc
     
-    # Option 1: keep container alive
+    # # Option 1: keep container alive
     # entrypoint: sleep infinity
     
     # Option 2: run pytest on all processors against test data
     entrypoint: python3 -m pytest -v --html=./docs/index.html --self-contained-html
     
-    # Option 3: run the developing processor on the example product
+    # # Option 3: run the developing processor on the example product
     # entrypoint: ["python3"]
-    # command: [ "/opt/geoproc/develop/runner.py", "abrfc_qpe_01hr_2025102413Z.nc.gz"]
+    # command: [ "/opt/geoproc/develop/runner.py", "prism_tmin_us_25m_20251103.zip"]
     
     volumes:
       - ./docs:/opt/geoproc/docs
