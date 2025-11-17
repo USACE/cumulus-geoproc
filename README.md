@@ -60,33 +60,27 @@ return [{
 
 ## Processor Local Development
 
-This repository tries to provide two basic ways to develop and test processors, .devcontainer and docker-compose.  The `.devcontainer` uses the existing `docker-compose.yml` file and is used with VS Code.  The other method is executing `docker compose` at the command line with appropriate options and commands.  Either method will require the user to make sure the `docker-compose.yml` file settings are correct before execution.
+This repository tries to provide two basic ways to develop and test processors, .devcontainer and docker-compose.  The `.devcontainer` uses the existing `docker-compose.yml` file and is used with VS Code.  The other method is executing `docker compose` at the command line with appropriate options and commands.  Either method will require the user to make sure the `docker-compose.yml` file settings are correct before execution. Make sure the `TEST_DATA_TAG: "2025-10-31"` targeting the geoproc-test-data is updated to the latest release. 
 
-There are three options in the `docker-compose.yml` file that should cover all needs during development.
+There are three options in the `docker-compose.yml` file that should cover all needs during development. To run any of the options, uncomment the selected option in `docker-compose.yml` (but make sure the other two are commented out) and run `docker compose run --rm geoproc`. When you are finsihed run `docker compose down -v` to shutdown and remove the volume.
 
 - Option 1: Run the container without it stopping and not run any processor
   - this options allows the user to "jump" into the container
 - Option 2: Run `pytest` on all processors against the test data repo
   - use this option when finalizing processor and testing all before pushing for a Pull Request; a failed test will not allow merging
+  - **Important: if the geoprocessor changes aren't included in the test, try to build the container with `docker compose build --no-cache geoproc` to make sure it is not testing with a cached geoprocessor. This is likely required to test  any changes.**
 - Option 3: Run the developing processor code defined in the `geoproc_develop/processor.py` file
-  - requires developing processor code in the `processor.py` file
-  - requires the data product testing against in the `geoproc_develp` directory
-  - requires the `command` docker compose file element defined with `runner.py` and the testing product name
-    - example: `command: [ "/opt/geoproc/develop/runner.py", "test_product_name"]`
+  - Place the processor code you want to test in the `processor.py` file
+  - Put a copy of the aquirable to be placed in the in the `geoproc_develop` directory
+  - Update the argument following  `"/opt/geoproc/develop/runner.py"` in `the docker-compose.yml` with your aquirable name.  
+    - example: `command: [ "/opt/geoproc/develop/runner.py", "abrfc_qpe_01hr_2025102413Z.nc.gz"]`
 
-# Processor Test Data
+# Geoproc Test Data
 
 Test data lives in the GitHub repository [USACE/cumulus-geoproc-test-data](https://github.com/USACE/cumulus-geoproc-test-data) as a release archive `tar.gz`. Each acquirable has its own directory with an example file(s) and `json` configuration file describing the test file(s). `pytest` `fixtures` is used to read each configuration `json` file, aggregate them into a single fixture, and uses them to define testing. There is a one-to-one releation between the processor and testing data.
 
 The `tar.gz` also containes some helper scripts, `gen_markdown` and `tar_test_data.sh`. `gen_markdown` is a Python script creating `Markdown` from each `json` configuration creating [TESTDATA.md](./TESTDATA.md). The shell script `tar_test_data.sh` creates `cumulus-geoproc-test-data.tar.gz` if changes are added for a new release.
 
-# **\*New release data requires a Docker file update**
-
-```yaml
-services:
-  geoproc:
-    build:
-      context: .
-      args:
-        TEST_DATA_TAG: "2025-01-31"
-```
+To tag a geoproc-test-data release, in the geoproc-test-data repo use these commands:
+`git tag -a 2025-10-15`
+`git push origin 2023-09-15`
