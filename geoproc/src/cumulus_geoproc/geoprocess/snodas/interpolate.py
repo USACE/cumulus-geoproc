@@ -5,9 +5,9 @@ import asyncio
 import os
 from collections import namedtuple
 from datetime import datetime, timezone
+from importlib.resources import files
 from string import Template
 
-import pkg_resources
 from cumulus_geoproc import logger
 from cumulus_geoproc.configurations import CUMULUS_PRODUCTS_BASEKEY
 from cumulus_geoproc.geoprocess.snodas import no_data_value, product_code
@@ -78,8 +78,8 @@ async def snodas_interp_task(
 
         if lakefix:
             # get the no data masking raster
-            masking_raster = pkg_resources.resource_filename(
-                __package__, "data/no_data_areas_swe_20140201.tif"
+            masking_raster = str(
+                files(__package__).joinpath("data/no_data_areas_swe_20140201.tif")
             )
             lakefix_tif = os.path.join(
                 dst,
