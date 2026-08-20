@@ -12,6 +12,9 @@ license = { file = "LICENSE" }
 dependencies = [
     "httpx",
     "httpx[http2]",
+    # Pinned for CVE-2026-71554. h2 is pulled in by httpx[http2], whose
+    # constraint is h2>=3,<5, so it would otherwise resolve to 4.3.0.
+    "h2>=4.4.1",
     "boto3",
     "botocore",
     "celery",

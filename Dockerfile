@@ -1,4 +1,4 @@
-FROM ghcr.io/osgeo/gdal:ubuntu-full-3.9.1
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.13.1
 ARG TEST_DATA_TAG
 
 ENV PYTHONUNBUFFERED=1
@@ -13,7 +13,7 @@ WORKDIR /opt/geoproc
 
 # apt-get install -y python3-pip python3-venv
 RUN apt-get -y update \
-    && apt-get install python3.12-venv -y \
+    && apt-get install python3-venv -y \
     && apt-get remove python3-pil -y
 
 # Get the test data before testing it
